@@ -285,9 +285,10 @@
       width: 100%;
     }
 
-    .exp-banner-grid {
+    .exp-summary-2 {
       display: grid;
-      grid-template-columns: minmax(0, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
       margin-bottom: 12px;
       width: 100%;
     }
@@ -309,7 +310,7 @@
     }
 
     @media (max-width: 860px) {
-      .stats-3, .target-grid { grid-template-columns: minmax(0, 1fr); }
+      .stats-3, .exp-summary-2, .target-grid { grid-template-columns: minmax(0, 1fr); }
       .acc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
 
@@ -335,6 +336,11 @@
     .exp-highlight {
       border-color: rgba(239, 68, 68, 0.35);
       background: linear-gradient(160deg, rgba(239, 68, 68, 0.1) 0%, var(--surface) 72%);
+    }
+
+    .monthly-highlight {
+      border-color: rgba(245, 158, 11, 0.38);
+      background: linear-gradient(160deg, rgba(245, 158, 11, 0.1) 0%, var(--surface) 72%);
     }
 
     .networth-card {
@@ -697,70 +703,54 @@
       <button type="button" class="page-tab" id="tabExpenses">Expenses Tab</button>
     </div>
 
-    <!-- 3 Core Ride Cards -->
-    <div class="stats-3">
-      <div class="card">
-        <div class="label" id="incomeLabel">Daily Income</div>
-        <div class="val pos" id="incomeVal">Rs. 0</div>
-        <div class="sub" id="incomeSplitSub">Uber: Rs. 0 · PickMe: Rs. 0</div>
-      </div>
-
-      <div class="card profit-highlight">
-        <div class="label" id="rideProfitLabel">Ride Net Profit</div>
-        <div class="val pos" id="rideProfitVal">Rs. 0</div>
-        <div class="sub" id="rideProfitSub">Rides Rs. 0 − Used Fuel Rs. 0</div>
-      </div>
-
-      <div class="card">
-        <div class="label" id="kmLabel">Total Ride KM</div>
-        <div class="val acc-col" id="kmTotalVal">0 km</div>
-        <div class="sub" id="usedFuelKmSub">Used fuel cost: Rs. 0</div>
-      </div>
-    </div>
-
-    <!-- Separate Daily / Monthly Expense Card -->
-    <div class="exp-banner-grid">
-      <div class="card exp-highlight">
-        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
-          <div>
-            <div class="label" id="separateExpenseLabel">Daily Expense</div>
-            <div class="val neg" id="separateExpenseVal">Rs. 0</div>
-            <div class="sub" id="separateExpenseSub">Monthly reserve: ~Rs. 0/day · ATM fees: Rs. 0</div>
-          </div>
-          <button type="button" class="btn-soft" style="width:auto; min-height:38px; padding:8px 12px; font-size:0.82rem;" onclick="setActiveTab('expenses')">
-            Open Expenses Tab →
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Monthly Target & Spending/Savings Check Cards -->
-    <div class="target-grid">
-      <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
-          <div class="label">Monthly Income Target &amp; Progress</div>
-          <button type="button" class="btn-soft" style="width:auto; min-height:32px; padding:4px 9px; font-size:0.75rem; border-radius:8px;" onclick="setMonthlyGoals()">Set Targets</button>
-        </div>
-        <div class="val acc-col" id="targetProgressText">0%</div>
-        <div class="sub" id="targetDetailSub">Rs. 0 / Rs. 0 target</div>
-        <div class="progress-track">
-          <div class="progress-fill" id="targetProgressBar"></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="label">Spending &amp; Savings Check (Month)</div>
-        <div class="val" id="monthSavedVal">Rs. 0</div>
-        <div class="sub" id="monthSpendVsLimitSub">Monthly Spent: Rs. 0 / Limit: Rs. 0</div>
-        <div style="display:flex; gap:6px; flex-wrap:wrap;">
-          <span class="status-badge badge-good" id="spendStatusBadge">Spending: Normal</span>
-          <span class="status-badge badge-good" id="saveStatusBadge">Savings: Checking</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- ==================== TAB 1: RIDE LEDGER & ACCOUNTS ==================== -->
+    <!-- ==================== TAB 1: RIDE LEDGER & TARGET ==================== -->
     <div id="sectionLedger">
+      <!-- 3 Core Ride Cards -->
+      <div class="stats-3">
+        <div class="card">
+          <div class="label" id="incomeLabel">Daily Income</div>
+          <div class="val pos" id="incomeVal">Rs. 0</div>
+          <div class="sub" id="incomeSplitSub">Uber: Rs. 0 · PickMe: Rs. 0</div>
+        </div>
+
+        <div class="card profit-highlight">
+          <div class="label" id="rideProfitLabel">Ride Net Profit</div>
+          <div class="val pos" id="rideProfitVal">Rs. 0</div>
+          <div class="sub" id="rideProfitSub">Rides Rs. 0 − Used Fuel Rs. 0</div>
+        </div>
+
+        <div class="card">
+          <div class="label" id="kmLabel">Total Ride KM</div>
+          <div class="val acc-col" id="kmTotalVal">0 km</div>
+          <div class="sub" id="usedFuelKmSub">Used fuel cost: Rs. 0</div>
+        </div>
+      </div>
+
+      <!-- Monthly Target & Spending/Savings Check Cards -->
+      <div class="target-grid">
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+            <div class="label">Monthly Income Target &amp; Progress</div>
+            <button type="button" class="btn-soft" style="width:auto; min-height:32px; padding:4px 9px; font-size:0.75rem; border-radius:8px;" onclick="setMonthlyGoals()">Set Targets</button>
+          </div>
+          <div class="val acc-col" id="targetProgressText">0%</div>
+          <div class="sub" id="targetDetailSub">Rs. 0 / Rs. 0 target</div>
+          <div class="progress-track">
+            <div class="progress-fill" id="targetProgressBar"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="label">Spending &amp; Savings Check (Month)</div>
+          <div class="val" id="monthSavedVal">Rs. 0</div>
+          <div class="sub" id="monthSpendVsLimitSub">Monthly Spent: Rs. 0 / Limit: Rs. 0</div>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <span class="status-badge badge-good" id="spendStatusBadge">Spending: Normal</span>
+            <span class="status-badge badge-good" id="saveStatusBadge">Savings: Checking</span>
+          </div>
+        </div>
+      </div>
+
       <!-- Total Net Worth / All Balances Summary -->
       <div class="card networth-card">
         <div class="label">Total Net Worth (All Accounts Combined)</div>
@@ -889,8 +879,22 @@
       </div>
     </div>
 
-    <!-- ==================== TAB 2: SEPARATE EXPENSES ==================== -->
+    <!-- ==================== TAB 2: CLEAN EXPENSES VIEW ==================== -->
     <div id="sectionExpenses" class="hidden">
+      <div class="exp-summary-2">
+        <div class="card exp-highlight">
+          <div class="label" id="dailyExpenseCardLabel">Daily Expense</div>
+          <div class="val neg" id="dailyExpenseCardVal">Rs. 0</div>
+          <div class="sub" id="dailyExpenseCardSub">ATM fees: Rs. 0</div>
+        </div>
+
+        <div class="card monthly-highlight">
+          <div class="label" id="monthlyExpenseCardLabel">Monthly Expense</div>
+          <div class="val cash-col" id="monthlyExpenseCardVal">Rs. 0</div>
+          <div class="sub" id="monthlyExpenseCardSub">Daily reserve: ~Rs. 0/day</div>
+        </div>
+      </div>
+
       <div class="card" style="margin-bottom:12px;">
         <div class="card-head">
           <h2>Add Expense / ATM Cash</h2>
@@ -946,7 +950,7 @@
       <div class="card" style="margin-bottom:12px;">
         <div class="card-head">
           <h2 id="breakdownTitle">Expense Breakdown</h2>
-          <span class="pill" id="totalExpBadge">Spent: Rs. 0</span>
+          <span class="pill" id="totalExpBadge">Shown: Rs. 0</span>
         </div>
         <div class="cat-grid" id="catBreakdown"></div>
       </div>
@@ -962,7 +966,7 @@
   </div>
 
   <script>
-    const STORAGE_KEY = "kaviwealth_pro_v14";
+    const STORAGE_KEY = "kaviwealth_pro_v15";
     const ATM_FEE = 25;
     const BASE_CATS = [
       "Food",
@@ -1466,7 +1470,20 @@
       const atmFeesSum = atms.reduce((a, b) => a + (Number(b.fee) || 0), 0);
       const atmCashSum = atms.reduce((a, b) => a + (Number(b.amount) || 0), 0);
 
-      const displayedExpense =
+      const dailyExpOnly =
+        mode === "daily"
+          ? expenses
+              .filter((x) => x.frequency !== "periodic")
+              .reduce((a, b) => a + (Number(b.amount) || 0), 0) + atmFeesSum
+          : expenses
+              .filter((x) => x.frequency !== "periodic")
+              .reduce((a, b) => a + (Number(b.amount) || 0), 0) + atmFeesSum;
+
+      const monthlyExpTotal = monthEntries
+        .filter((x) => x.type === "expense" && x.frequency === "periodic")
+        .reduce((a, b) => a + (Number(b.amount) || 0), 0);
+
+      const shownExpenseTotal =
         mode === "daily"
           ? expenses
               .filter((x) => x.frequency !== "periodic")
@@ -1490,11 +1507,15 @@
       document.getElementById("kmTotalVal").textContent = fmtKm(totalKm);
       document.getElementById("usedFuelKmSub").textContent = `Used fuel cost: ${fmtRs(usedPetrolCost)}`;
 
-      document.getElementById("separateExpenseLabel").textContent =
-        mode === "daily" ? "Daily Expense" : "Monthly Expense";
-      document.getElementById("separateExpenseVal").textContent = fmtRs(displayedExpense);
-      document.getElementById("separateExpenseSub").textContent =
-        `Monthly reserve: ~${fmtRs(dailyReserveFromPeriodic)}/day · ATM fees: ${fmtRs(atmFeesSum)}`;
+      document.getElementById("dailyExpenseCardLabel").textContent =
+        mode === "daily" ? `Daily Expense (${selectedDate})` : `Daily-Type Expense (${selectedMonth})`;
+      document.getElementById("dailyExpenseCardVal").textContent = fmtRs(dailyExpOnly);
+      document.getElementById("dailyExpenseCardSub").textContent = `ATM fees: ${fmtRs(atmFeesSum)}`;
+
+      document.getElementById("monthlyExpenseCardLabel").textContent = `Monthly Expense (${selectedMonth})`;
+      document.getElementById("monthlyExpenseCardVal").textContent = fmtRs(monthlyExpTotal);
+      document.getElementById("monthlyExpenseCardSub").textContent =
+        `Daily reserve: ~${fmtRs(dailyReserveFromPeriodic)}/day`;
 
       const mInc = monthEntries.filter((x) => x.type === "income").reduce((a, b) => a + (Number(b.amount) || 0), 0);
       const mExp =
@@ -1618,7 +1639,7 @@
       }
 
       document.getElementById("breakdownTitle").textContent = `Expense Breakdown — ${periodTag}`;
-      document.getElementById("totalExpBadge").textContent = `Shown: ${fmtRs(displayedExpense)}`;
+      document.getElementById("totalExpBadge").textContent = `Shown: ${fmtRs(shownExpenseTotal)}`;
 
       const catTotals = {};
       orderedExpenseCats().forEach((c) => {
