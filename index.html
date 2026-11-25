@@ -201,6 +201,17 @@
       color: var(--text);
     }
 
+    .btn-edit {
+      width: auto;
+      background: rgba(56, 189, 248, 0.14);
+      color: #7dd3fc;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      min-height: 34px;
+      padding: 5px 10px;
+      font-size: 0.76rem;
+      border-radius: 9px;
+    }
+
     .btn-del {
       width: auto;
       background: rgba(239, 68, 68, 0.15);
@@ -298,6 +309,12 @@
     .exp-highlight {
       border-color: rgba(239, 68, 68, 0.35);
       background: linear-gradient(160deg, rgba(239, 68, 68, 0.1) 0%, var(--surface) 72%);
+    }
+
+    .networth-card {
+      border-color: rgba(56, 189, 248, 0.38);
+      background: linear-gradient(160deg, rgba(56, 189, 248, 0.11) 0%, var(--surface) 72%);
+      margin-bottom: 12px;
     }
 
     .label {
@@ -579,7 +596,7 @@
     .entry-right {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       flex-shrink: 0;
     }
 
@@ -707,6 +724,13 @@
 
     <!-- ==================== TAB 1: RIDE LEDGER & ACCOUNTS ==================== -->
     <div id="sectionLedger">
+      <!-- Total Net Worth / All Balances Summary -->
+      <div class="card networth-card">
+        <div class="label">Total Net Worth (All Accounts Combined)</div>
+        <div class="val acc-col" id="totalNetWorthVal">Rs. 0</div>
+        <div class="sub" id="totalNetWorthSub">Banks: Rs. 0 · Cash: Rs. 0 · Unit Trust: Rs. 0</div>
+      </div>
+
       <div class="card fuel-bar">
         <div class="field-group">
           <label for="petrolPriceInput">Petrol Price (Rs. per Litre)</label>
@@ -889,7 +913,7 @@
   </div>
 
   <script>
-    const STORAGE_KEY = "kaviwealth_pro_v12";
+    const STORAGE_KEY = "kaviwealth_pro_v13";
     const ATM_FEE = 25;
     const BASE_CATS = [
       "Food",
@@ -1127,10 +1151,7 @@
       render();
     }
 
-    function removeEntry(id) {
-      const idx = data.entries.findIndex((x) => x.id === id);
-      if (idx === -1) return;
-      const item = data.entries[idx];
+    function revertEntryEffect(item) {
       const amt = Number(item.amount) || 0;
       const fee = Number(item.fee) || 0;
 
@@ -1152,7 +1173,81 @@
           data.balances[item.account] -= amt;
         }
       }
+    }
 
+    function applyEntryEffect(item) {
+      const amt = Number(item.amount) || 0;
+      const fee = Number(item.fee) || 0;
+
+      if (item.type === "deposit") {
+        if (item.account && data.balances.hasOwnProperty(item.account)) {
+          data.balances[item.account] += amt;
+        }
+      } else if (item.type === "atm") {
+        if (item.account && data.balances.hasOwnProperty(item.account)) {
+          data.balances[item.account] -= amt + fee;
+        }
+        data.balances.cash = (data.balances.cash || 0) + amt;
+      } else if (item.type === "expense") {
+        if (item.account && data.balances.hasOwnProperty(item.account)) {
+          data.balances[item.account] -= amt;
+        }
+      } else if (item.type === "income") {
+        if (item.account && data.balances.hasOwnProperty(item.account)) {
+          data.balances[item.account] += amt;
+        }
+      }
+    }
+
+    function editEntry(id) {
+      const item = data.entries.find((x) => x.id === id);
+      if (!item) return;
+
+      const amtAns = prompt("Update Amount (Rs.):", item.amount);
+      if (amtAns === null) return;
+      const newAmt = parseFloat(amtAns);
+      if (Number.isNaN(newAmt) || newAmt < 0) {
+        alert("Enter a valid amount.");
+        return;
+      }
+
+      let newKm = Number(item.km) || 0;
+      if (item.type === "income") {
+        const kmAns = prompt("Update Total Ride KM:", newKm);
+        if (kmAns === null) return;
+        const parsedKm = parseFloat(kmAns);
+        if (Number.isNaN(parsedKm) || parsedKm < 0) {
+          alert("Enter a valid KM value.");
+          return;
+        }
+        newKm = parsedKm;
+      }
+
+      const noteAns = prompt("Update Note (optional):", item.note || "");
+      if (noteAns === null) return;
+
+      revertEntryEffect(item);
+
+      item.amount = newAmt;
+      if (item.type === "income") {
+        item.km = newKm;
+        item.uber = newAmt;
+        item.pickme = 0;
+        item.other = 0;
+      }
+      item.note = noteAns.trim();
+
+      applyEntryEffect(item);
+
+      persist();
+      render();
+    }
+
+    function removeEntry(id) {
+      const idx = data.entries.findIndex((x) => x.id === id);
+      if (idx === -1) return;
+      const item = data.entries[idx];
+      revertEntryEffect(item);
       data.entries.splice(idx, 1);
       persist();
       render();
@@ -1227,15 +1322,7 @@
         note,
       };
 
-      if (isAtm) {
-        if (account && data.balances.hasOwnProperty(account)) {
-          data.balances[account] -= amount + fee;
-        }
-        data.balances.cash = (data.balances.cash || 0) + amount;
-      } else if (account && data.balances.hasOwnProperty(account)) {
-        data.balances[account] -= amount;
-      }
-
+      applyEntryEffect(entry);
       data.entries.unshift(entry);
       persist();
 
@@ -1277,10 +1364,7 @@
         note,
       };
 
-      if (account && data.balances.hasOwnProperty(account)) {
-        data.balances[account] += totalAmount;
-      }
-
+      applyEntryEffect(entry);
       data.entries.unshift(entry);
       persist();
 
@@ -1409,10 +1493,21 @@
         saveBadge.className = "status-badge badge-warn";
       }
 
-      document.getElementById("acc1Val").textContent = fmtRs(data.balances.acc1);
-      document.getElementById("acc2Val").textContent = fmtRs(data.balances.acc2);
-      document.getElementById("cashVal").textContent = fmtRs(data.balances.cash);
-      document.getElementById("utVal").textContent = fmtRs(data.balances.ut);
+      // Total Net Worth & Accounts
+      const b1 = Number(data.balances.acc1) || 0;
+      const b2 = Number(data.balances.acc2) || 0;
+      const cashB = Number(data.balances.cash) || 0;
+      const utB = Number(data.balances.ut) || 0;
+      const totalNetWorth = b1 + b2 + cashB + utB;
+
+      document.getElementById("totalNetWorthVal").textContent = fmtRs(totalNetWorth);
+      document.getElementById("totalNetWorthSub").textContent =
+        `Banks: ${fmtRs(b1 + b2)} · Cash: ${fmtRs(cashB)} · Unit Trust: ${fmtRs(utB)}`;
+
+      document.getElementById("acc1Val").textContent = fmtRs(b1);
+      document.getElementById("acc2Val").textContent = fmtRs(b2);
+      document.getElementById("cashVal").textContent = fmtRs(cashB);
+      document.getElementById("utVal").textContent = fmtRs(utB);
 
       const accMap = {
         acc1: "Spending / Bank 1",
@@ -1466,6 +1561,7 @@
             </div>
             <div class="entry-right">
               <strong class="${amtClass}">${prefix}${fmtRs(item.amount)}</strong>
+              <button type="button" class="btn-edit" onclick="editEntry('${item.id}')">Edit</button>
               <button type="button" class="btn-del" onclick="removeEntry('${item.id}')">Delete</button>
             </div>
           `;
@@ -1529,6 +1625,7 @@
             </div>
             <div class="entry-right">
               <strong class="${isAtm ? "cash-col" : "neg"}">${isAtm ? "⇄ " : "-"}${fmtRs(item.amount)}</strong>
+              <button type="button" class="btn-edit" onclick="editEntry('${item.id}')">Edit</button>
               <button type="button" class="btn-del" onclick="removeEntry('${item.id}')">Delete</button>
             </div>
           `;
