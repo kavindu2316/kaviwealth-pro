@@ -1,0 +1,1752 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KaviWealth Pro — N160 Smart Ledger</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        obsidian: '#090D16',
+                        panel: '#111827',
+                        panelLight: '#1E293B',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #090D16;
+            color: #F8FAFC;
+            overflow-x: hidden;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #090D16; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        .glass-panel {
+            background: linear-gradient(155deg, rgba(17, 24, 39, 0.96), rgba(11, 16, 28, 0.98));
+            border: 1px solid rgba(51, 65, 85, 0.55);
+            box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.5);
+        }
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+        }
+        input[type="range"] {
+            accent-color: #10B981;
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen pb-16">
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
+
+    <!-- ===================================================================== -->
+    <!-- TOP STICKY HEADER                                                     -->
+    <!-- ===================================================================== -->
+    <header class="sticky top-0 z-40 bg-[#090D16]/90 backdrop-blur-md border-b border-slate-800/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
+            <!-- Brand -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-600 flex items-center justify-center text-white shadow-lg shadow-emerald-950/60 shrink-0">
+                    <i class="fa-solid fa-bolt text-lg"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="font-extrabold text-base sm:text-lg tracking-tight text-white">KaviWealth <span class="text-emerald-400">Pro</span></h1>
+                        <span class="hidden sm:inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">N160 Smart Ledger</span>
+                    </div>
+                    <p class="text-[11px] text-slate-400 hidden md:block">PickMe &bull; Uber Eats &bull; Auto Fuel Calc &bull; Dual Bank &bull; Monthly Target</p>
+                </div>
+            </div>
+
+            <!-- Header Action Controls (Mobile-Friendly Touch Targets) -->
+            <div class="flex items-center gap-2">
+                <select id="periodFilter" onchange="refreshDashboard()" class="bg-slate-800/90 border border-slate-700 text-slate-200 text-xs sm:text-sm rounded-xl px-2.5 sm:px-3 py-2.5 focus:outline-none focus:border-emerald-500 cursor-pointer">
+                    <option value="all">All Time</option>
+                    <option value="month" selected>This Month</option>
+                    <option value="week">Last 7 Days</option>
+                    <option value="today">Today</option>
+                </select>
+
+                <button onclick="openSettingsModal()" class="p-2.5 sm:p-3 rounded-xl bg-slate-800/90 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white transition" title="Monthly Target, Boarding Rent & Bike Settings">
+                    <i class="fa-solid fa-sliders"></i>
+                </button>
+
+                <button onclick="openRideModal()" class="bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white font-semibold text-xs sm:text-sm px-3.5 sm:px-4 py-2.5 rounded-xl shadow-lg shadow-emerald-950/50 flex items-center gap-2 transition active:scale-95">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Add Day</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===================================================================== -->
+    <!-- MAIN DASHBOARD CONTAINER                                              -->
+    <!-- ===================================================================== -->
+    <main class="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 pt-4 sm:pt-6 space-y-5 sm:space-y-6">
+
+        <!-- Demo Data Notification Banner -->
+        <div id="demoBanner" class="hidden glass-panel border-amber-500/40 bg-amber-950/20 rounded-2xl p-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                </div>
+                <p class="text-xs sm:text-sm text-amber-200">
+                    <span class="font-bold">Sample Data Loaded:</span> Test auto-fuel, dual bank accounts, month-end boarding rent, and monthly salary target. Clear anytime to start fresh!
+                </p>
+            </div>
+            <button onclick="confirmClearDemo()" class="text-xs font-semibold bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 px-3.5 py-2 rounded-xl transition shrink-0 w-full sm:w-auto">
+                Clear Sample & Start Fresh
+            </button>
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- 1. MONTHLY HEALTH STATUS & SUMMARY BANNER (HERO)                  -->
+        <!-- ================================================================= -->
+        <section id="safetyZoneCard" class="glass-panel rounded-2xl p-4 sm:p-6 border-l-4 border-l-emerald-500 transition-all">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 sm:gap-5">
+                <!-- Left Status & Singlish/English Feedback -->
+                <div class="space-y-2 max-w-2xl">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span id="safetyBadge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <span id="safetyZoneTitle">HODA MATTAMAKA (SAFE)</span>
+                        </span>
+                        <span id="safetyScoreText" class="text-xs font-mono text-slate-400">Net Margin: 0%</span>
+                        <span id="boardingStatusBadge" class="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">
+                            Month-End Boarding: Rs. 0
+                        </span>
+                    </div>
+                    <h2 id="safetyHeadline" class="text-base sm:text-lg font-bold text-white leading-snug">
+                        Hoda Mattamaka (Safe)! Mase adayama saha wiyadam hoda level ekaka thiyanawa.
+                    </h2>
+                    <p id="safetyAdvice" class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                        Month-end boarding rent and daily expenses are well covered by your riding income and bank balances.
+                    </p>
+                </div>
+
+                <!-- Right Monthly Summary & Health Metrics -->
+                <div class="grid grid-cols-3 gap-2 sm:gap-3 lg:w-[27rem] shrink-0">
+                    <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-2.5 sm:p-3 text-center">
+                        <span class="text-[10px] uppercase tracking-wider text-slate-400 block">Mase Income</span>
+                        <span id="monthSummaryIncome" class="font-mono text-xs sm:text-base font-bold text-white mt-0.5 block">Rs. 0</span>
+                    </div>
+                    <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-2.5 sm:p-3 text-center">
+                        <span class="text-[10px] uppercase tracking-wider text-slate-400 block">Mase Wiyadam*</span>
+                        <span id="monthSummaryExpense" class="font-mono text-xs sm:text-base font-bold text-rose-400 mt-0.5 block">Rs. 0</span>
+                    </div>
+                    <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-2.5 sm:p-3 text-center">
+                        <span class="text-[10px] uppercase tracking-wider text-slate-400 block">Mase Net Profit</span>
+                        <span id="monthSummaryProfit" class="font-mono text-xs sm:text-base font-bold text-emerald-400 mt-0.5 block">Rs. 0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visual Health Meter -->
+            <div class="mt-4 pt-3 border-t border-slate-800/80">
+                <div class="flex justify-between text-[10px] font-semibold uppercase tracking-wider mb-1.5">
+                    <span class="text-rose-400">Awadanam (&lt;20%)</span>
+                    <span class="text-amber-400">Watch (20% - 34%)</span>
+                    <span class="text-emerald-400">Hoda Mattamaka (35%+)</span>
+                </div>
+                <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden flex">
+                    <div class="w-1/3 bg-rose-500/30 border-r border-slate-900"></div>
+                    <div class="w-1/3 bg-amber-500/30 border-r border-slate-900"></div>
+                    <div class="w-1/3 bg-emerald-500/30"></div>
+                </div>
+                <div class="relative w-full h-2 -mt-2.5">
+                    <div id="safetyPointer" class="w-4 h-4 rounded-full bg-white border-2 border-emerald-500 shadow-md -mt-0.5 transition-all duration-500" style="margin-left: 50%;"></div>
+                </div>
+                <p class="text-[11px] text-slate-400 mt-2">
+                    *Mase Wiyadam includes daily Fuel, Bike Maintenance, Kama Bima, Extra + <strong id="boardingFootnoteAmt" class="text-indigo-300">Rs. 0</strong> month-end Boarding Rent.
+                </p>
+            </div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- 2. TOP KPI SUMMARY CARDS                                          -->
+        <!-- ================================================================= -->
+        <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <!-- Gross Rider Income -->
+            <div class="glass-panel rounded-2xl p-4 sm:p-5">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-medium text-slate-400">PickMe + Uber Income</span>
+                    <span class="w-8 h-8 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center text-sm">
+                        <i class="fa-solid fa-sack-dollar"></i>
+                    </span>
+                </div>
+                <div id="kpiGrossIncome" class="font-mono text-base sm:text-2xl font-bold text-white">Rs. 0</div>
+                <div id="kpiSplitIncome" class="text-[11px] text-slate-400 mt-1.5 truncate">
+                    <span class="text-amber-400">PM: Rs. 0</span> &bull; <span class="text-emerald-400">UE: Rs. 0</span>
+                </div>
+            </div>
+
+            <!-- Total Period Expenses -->
+            <div class="glass-panel rounded-2xl p-4 sm:p-5">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-medium text-slate-400">Total Expenses</span>
+                    <span class="w-8 h-8 rounded-lg bg-rose-500/15 text-rose-400 flex items-center justify-center text-sm">
+                        <i class="fa-solid fa-fire-flame-curved"></i>
+                    </span>
+                </div>
+                <div id="kpiTotalExpense" class="font-mono text-base sm:text-2xl font-bold text-rose-400">Rs. 0</div>
+                <div id="kpiFuelSummary" class="text-[11px] text-slate-400 mt-1.5 truncate">
+                    Fuel: Rs. 0 &bull; Other: Rs. 0
+                </div>
+            </div>
+
+            <!-- Net Profit (Labaya) -->
+            <div class="glass-panel rounded-2xl p-4 sm:p-5 border-emerald-500/30">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-semibold text-emerald-300">Net Profit (Labaya)</span>
+                    <span class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </span>
+                </div>
+                <div id="kpiNetProfit" class="font-mono text-base sm:text-2xl font-bold text-emerald-400">Rs. 0</div>
+                <div id="kpiAvgDailyProfit" class="text-[11px] text-slate-400 mt-1.5 truncate">
+                    Avg: Rs. 0 / riding day
+                </div>
+            </div>
+
+            <!-- Combined Dual Bank Balance -->
+            <div class="glass-panel rounded-2xl p-4 sm:p-5 border-cyan-500/30">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-semibold text-cyan-300">Dual Bank Total</span>
+                    <span class="w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-sm">
+                        <i class="fa-solid fa-building-columns"></i>
+                    </span>
+                </div>
+                <div id="kpiBankBalance" class="font-mono text-base sm:text-2xl font-bold text-cyan-400">Rs. 0</div>
+                <div class="mt-1.5 flex items-center gap-2 text-[11px]">
+                    <button onclick="openBankTxModal('deposit')" class="font-semibold text-emerald-400 hover:underline py-0.5">+ Deposit</button>
+                    <span class="text-slate-600">|</span>
+                    <button onclick="openBankTxModal('transfer')" class="font-semibold text-cyan-400 hover:underline py-0.5">Transfer</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- 3. MONTHLY INCOME / SALARY TARGET & DUAL BANK ACCOUNTS              -->
+        <!-- ================================================================= -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+            
+            <!-- Monthly Income / Salary Target Tracker (6 Cols) -->
+            <div class="lg:col-span-6 glass-panel rounded-2xl p-4 sm:p-6 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between gap-2 pb-4 border-b border-slate-800">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-bullseye text-lg"></i>
+                            </div>
+                            <div>
+                                <h2 class="font-bold text-base sm:text-lg text-white">Monthly Income / Salary Target</h2>
+                                <p class="text-xs text-slate-400">Mase hoyapu gross income vs. target</p>
+                            </div>
+                        </div>
+                        <button onclick="openQuickTargetModal()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-2 rounded-xl transition font-medium">
+                            <i class="fa-solid fa-pen mr-1"></i> Edit Target
+                        </button>
+                    </div>
+
+                    <!-- Earned vs Target -->
+                    <div class="mt-5">
+                        <div class="flex justify-between items-baseline mb-2 gap-2">
+                            <div>
+                                <span id="monthlyEarnedDisplay" class="font-mono text-xl sm:text-2xl font-bold text-emerald-400">Rs. 0</span>
+                                <span class="text-xs text-slate-400 ml-1">of <strong id="monthlyTargetDisplay" class="text-white">Rs. 220,000</strong></span>
+                            </div>
+                            <span id="monthlyTargetPctDisplay" class="font-mono text-sm sm:text-base font-extrabold text-cyan-400">0%</span>
+                        </div>
+
+                        <div class="w-full h-4 bg-slate-800 rounded-full overflow-hidden p-0.5">
+                            <div id="monthlyTargetBar" class="h-full rounded-full bg-gradient-to-r from-emerald-500 to-cyan-400 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 mt-4">
+                            <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-3">
+                                <span class="text-[11px] text-slate-400 block">Thawa Hoyanna Oni (Remaining)</span>
+                                <span id="monthlyRemainingDisplay" class="font-mono text-sm sm:text-base font-bold text-amber-400 mt-0.5 block">Rs. 0</span>
+                            </div>
+                            <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-3">
+                                <span class="text-[11px] text-slate-400 block">Month-End Boarding Rent</span>
+                                <span id="monthlyBoardingCardDisplay" class="font-mono text-sm sm:text-base font-bold text-indigo-400 mt-0.5 block">Rs. 0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-slate-800/70 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400">
+                    <span id="monthlyPaceHint">Log daily PickMe & Uber income to track your monthly pace.</span>
+                    <button onclick="openSettingsModal()" class="text-indigo-400 hover:underline font-medium">Set Boarding Rent</button>
+                </div>
+            </div>
+
+            <!-- Dual Bank / Savings Accounts Tracker (6 Cols) -->
+            <div class="lg:col-span-6 glass-panel rounded-2xl p-4 sm:p-6 flex flex-col justify-between">
+                <div>
+                    <div class="flex flex-wrap items-center justify-between gap-2 pb-4 border-b border-slate-800">
+                        <div>
+                            <h2 class="font-bold text-base sm:text-lg text-white">Dual Bank & Savings Accounts</h2>
+                            <p class="text-xs text-slate-400">Account 1: Ithuru / Unit Trust &bull; Account 2: Wiyadam / Daily</p>
+                        </div>
+                        <div class="flex gap-1.5">
+                            <button onclick="openBankTxModal('deposit')" class="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 text-xs font-semibold px-3 py-2 rounded-xl transition">
+                                + / - Tx
+                            </button>
+                            <button onclick="openBankTxModal('transfer')" class="bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-300 border border-cyan-500/40 text-xs font-semibold px-3 py-2 rounded-xl transition">
+                                Transfer
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Account 1 & Account 2 Cards with Direct Edit -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                        <!-- Account 1: Savings / Unit Trust -->
+                        <div class="bg-slate-900/90 border border-indigo-500/30 rounded-xl p-3.5">
+                            <div class="flex items-center justify-between gap-1">
+                                <span class="text-[11px] font-semibold text-indigo-300 truncate" id="acc1NameDisplay">Account 1: Ithuru / Unit Trust</span>
+                                <button onclick="openEditBalanceModal('acc1')" class="text-xs text-slate-400 hover:text-white bg-slate-800 px-2 py-1 rounded-lg transition" title="Edit Account 1 Balance">
+                                    <i class="fa-solid fa-pen"></i> Set
+                                </button>
+                            </div>
+                            <span id="acc1BalanceDisplay" class="font-mono text-lg sm:text-xl font-bold text-indigo-400 mt-1.5 block">Rs. 0</span>
+                            <span class="text-[10px] text-slate-400">Long-term savings &amp; investments</span>
+                        </div>
+
+                        <!-- Account 2: Spending / Operations -->
+                        <div class="bg-slate-900/90 border border-cyan-500/30 rounded-xl p-3.5">
+                            <div class="flex items-center justify-between gap-1">
+                                <span class="text-[11px] font-semibold text-cyan-300 truncate" id="acc2NameDisplay">Account 2: Wiyadam / Main Bank</span>
+                                <button onclick="openEditBalanceModal('acc2')" class="text-xs text-slate-400 hover:text-white bg-slate-800 px-2 py-1 rounded-lg transition" title="Edit Account 2 Balance">
+                                    <i class="fa-solid fa-pen"></i> Set
+                                </button>
+                            </div>
+                            <span id="acc2BalanceDisplay" class="font-mono text-lg sm:text-xl font-bold text-cyan-400 mt-1.5 block">Rs. 0</span>
+                            <span class="text-[10px] text-slate-400">Daily cashflow, fuel &amp; expenses</span>
+                        </div>
+                    </div>
+
+                    <!-- Recent Bank Transactions (Editable & Deletable) -->
+                    <div id="bankTxList" class="mt-4 space-y-2 max-h-40 overflow-y-auto pr-1">
+                        <!-- Populated via JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- 4. EXPENSE BREAKDOWN VISUALIZATION & N160 BIKE TELEMETRY          -->
+        <!-- ================================================================= -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+            
+            <!-- Expense Breakdown Pure SVG Donut & Category Bars (7 Cols) -->
+            <div class="lg:col-span-7 glass-panel rounded-2xl p-4 sm:p-6">
+                <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+                    <div>
+                        <h2 class="font-bold text-base sm:text-lg text-white">Income Allocation &amp; Expense Breakdown</h2>
+                        <p class="text-xs text-slate-400">Fuel, Bike Maint., Kama Bima, Extra, Month-End Boarding &amp; Net Profit</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-12 gap-5 items-center mt-5">
+                    <!-- Pure SVG Donut Ring -->
+                    <div class="sm:col-span-5 flex flex-col items-center justify-center relative">
+                        <svg id="donutSvg" viewBox="0 0 160 160" class="w-40 h-40 -rotate-90 transform"></svg>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                            <span class="text-[10px] uppercase tracking-wider text-slate-400">Gross Income</span>
+                            <span id="donutCenterTotal" class="font-mono text-xs sm:text-sm font-bold text-white">Rs. 0</span>
+                        </div>
+                    </div>
+
+                    <!-- Category Progress Bars -->
+                    <div id="categoryBarsContainer" class="sm:col-span-7 space-y-2.5 text-xs">
+                        <!-- Populated dynamically via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bajaj Pulsar N160 Odometer & Fuel Efficiency Card (5 Cols) -->
+            <div class="lg:col-span-5 glass-panel rounded-2xl p-4 sm:p-6 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-9 h-9 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center">
+                                <i class="fa-solid fa-motorcycle"></i>
+                            </div>
+                            <div>
+                                <h2 class="font-bold text-base text-white">Pulsar N160 Health &amp; Fuel</h2>
+                                <p class="text-xs text-slate-400">2,500 km service &amp; mileage stats</p>
+                            </div>
+                        </div>
+                        <button onclick="markServiceDone()" class="text-xs bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-slate-700 px-3 py-2 rounded-xl transition" title="Reset service counter to current ODO">
+                            <i class="fa-solid fa-wrench mr-1"></i> Reset Service
+                        </button>
+                    </div>
+
+                    <!-- Odometer & Service Progress -->
+                    <div class="mt-4 bg-slate-900/80 border border-slate-800 rounded-xl p-3.5">
+                        <div class="flex justify-between items-end mb-2">
+                            <div>
+                                <span class="text-[10px] uppercase tracking-wider text-slate-400 block">Current Odometer</span>
+                                <span id="n160OdoDisplay" class="font-mono text-xl font-bold text-white">15,000 km</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-[10px] uppercase tracking-wider text-slate-400 block">Next Service</span>
+                                <span id="n160NextServiceDisplay" class="font-mono text-sm font-semibold text-rose-400">17,500 km</span>
+                            </div>
+                        </div>
+                        <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden">
+                            <div id="n160ServiceBar" class="h-full bg-gradient-to-r from-emerald-500 via-amber-500 to-rose-500 transition-all duration-500" style="width: 20%"></div>
+                        </div>
+                        <div class="flex justify-between text-[11px] mt-2">
+                            <span id="n160LastServiceLabel" class="text-slate-400">Last: 15,000 km</span>
+                            <span id="n160KmLeftLabel" class="font-semibold text-emerald-400">2,500 km left</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bike Telemetry Stats -->
+                <div class="grid grid-cols-3 gap-2.5 mt-4">
+                    <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-2.5 text-center">
+                        <span class="text-[10px] text-slate-400 block">Total Ridden</span>
+                        <span id="n160PeriodKm" class="font-mono text-xs sm:text-sm font-bold text-amber-400 mt-0.5 block">0 km</span>
+                    </div>
+                    <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-2.5 text-center">
+                        <span class="text-[10px] text-slate-400 block">Avg Mileage</span>
+                        <span id="n160AvgMileage" class="font-mono text-xs sm:text-sm font-bold text-cyan-400 mt-0.5 block">45.0 km/L</span>
+                    </div>
+                    <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-2.5 text-center">
+                        <span class="text-[10px] text-slate-400 block">Net Profit / km</span>
+                        <span id="n160ProfitPerKm" class="font-mono text-xs sm:text-sm font-bold text-emerald-400 mt-0.5 block">Rs. 0.0</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- 5. DAILY RIDER & EXPENSE HISTORY TABLE                            -->
+        <!-- ================================================================= -->
+        <section class="glass-panel rounded-2xl p-4 sm:p-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800">
+                <div>
+                    <h2 class="font-bold text-base sm:text-lg text-white">Daily Rider &amp; Expense Ledger</h2>
+                    <p class="text-xs text-slate-400">Tap Edit or Delete on any day to update records anytime</p>
+                </div>
+
+                <!-- Search & Data Tools -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <div class="relative flex-1 sm:flex-initial">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input type="text" id="tableSearch" onkeyup="renderDailyTable()" placeholder="Search date or note..." class="w-full sm:w-44 bg-slate-900 border border-slate-700 rounded-xl pl-8 pr-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+                    </div>
+
+                    <button onclick="exportCSV()" class="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 text-xs font-medium px-3 py-2 rounded-xl flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-file-excel"></i>
+                        <span>Excel CSV</span>
+                    </button>
+
+                    <button onclick="exportBackupJSON()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-medium px-3 py-2 rounded-xl flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-download"></i>
+                        <span>Backup</span>
+                    </button>
+
+                    <label class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-medium px-3 py-2 rounded-xl flex items-center gap-1.5 transition cursor-pointer">
+                        <i class="fa-solid fa-upload"></i>
+                        <span>Restore</span>
+                        <input type="file" accept=".json" onchange="importBackupJSON(event)" class="hidden">
+                    </label>
+                </div>
+            </div>
+
+            <!-- Responsive Table -->
+            <div class="overflow-x-auto mt-4">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-slate-800 text-[11px] uppercase tracking-wider text-slate-400">
+                            <th class="py-3 px-3">Date &amp; Note</th>
+                            <th class="py-3 px-3">Income (PM/UE)</th>
+                            <th class="py-3 px-3">KM &amp; Auto-Fuel</th>
+                            <th class="py-3 px-3">Maint.</th>
+                            <th class="py-3 px-3">Kama Bima</th>
+                            <th class="py-3 px-3">Extra</th>
+                            <th class="py-3 px-3 text-emerald-400">Eda Labaya</th>
+                            <th class="py-3 px-3 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dailyTableBody" class="divide-y divide-slate-800/60 text-xs sm:text-sm">
+                        <!-- Rows populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="emptyTableMessage" class="hidden py-10 text-center">
+                <p class="text-sm text-slate-300 font-medium">No ride records found for this filter.</p>
+                <p class="text-xs text-slate-500 mt-1">Tap "+ Add Day" at the top to log your rides and expenses.</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 1: ADD / EDIT DAILY RIDE & EXPENSE ENTRY                        -->
+    <!-- ===================================================================== -->
+    <div id="rideModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+        <div class="glass-panel border-slate-700 rounded-2xl max-w-2xl w-full p-4 sm:p-6 my-auto max-h-[92vh] overflow-y-auto">
+            <div class="flex items-center justify-between pb-3.5 border-b border-slate-800">
+                <div>
+                    <h3 id="rideModalTitle" class="font-bold text-base sm:text-lg text-white">Log Today's Ride &amp; Expenses</h3>
+                    <p class="text-xs text-slate-400">Boarding rent is deducted at month-end automatically.</p>
+                </div>
+                <button onclick="closeRideModal()" class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="rideForm" onsubmit="saveRideEntry(event)" class="mt-4 space-y-4">
+                <input type="hidden" id="editRideId">
+
+                <!-- Row 1: Date & Income -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Date</label>
+                        <input type="date" id="fDate" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-amber-300 mb-1">PickMe Income (Rs.)</label>
+                        <input type="number" min="0" id="fPickme" oninput="recalcFormLive()" placeholder="0" class="w-full bg-slate-900 border border-slate-700 focus:border-amber-500 rounded-xl px-3 py-2.5 text-sm font-mono text-white focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-emerald-300 mb-1">Uber Eats Income (Rs.)</label>
+                        <input type="number" min="0" id="fUber" oninput="recalcFormLive()" placeholder="0" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3 py-2.5 text-sm font-mono text-white focus:outline-none">
+                    </div>
+                </div>
+
+                <!-- Row 2: Auto Fuel Calculator Box -->
+                <div class="bg-amber-950/20 border border-amber-500/30 rounded-xl p-3.5 space-y-3">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+                            <i class="fa-solid fa-gas-pump"></i> N160 Smart Fuel Calculator
+                        </span>
+                        <label class="inline-flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer py-1">
+                            <input type="checkbox" id="fManualFuelToggle" onchange="toggleManualFuel()" class="accent-amber-500 w-4 h-4">
+                            <span>Manual Fuel Override</span>
+                        </label>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div>
+                            <label class="block text-[11px] text-slate-300 mb-1">Duwapu KM</label>
+                            <input type="number" step="0.1" min="0" id="fKm" oninput="recalcFormLive()" placeholder="e.g. 120" required class="w-full bg-slate-900 border border-slate-700 focus:border-amber-500 rounded-xl px-3 py-2.5 text-sm font-mono text-white focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-slate-300 mb-1">Bike Mileage (km/L)</label>
+                            <input type="number" step="0.1" min="1" id="fMileage" oninput="recalcFormLive()" required class="w-full bg-slate-900 border border-slate-700 focus:border-amber-500 rounded-xl px-3 py-2.5 text-sm font-mono text-white focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-slate-300 mb-1">Petrol Price (Rs./L)</label>
+                            <input type="number" step="0.1" min="1" id="fPetrolPrice" oninput="recalcFormLive()" required class="w-full bg-slate-900 border border-slate-700 focus:border-amber-500 rounded-xl px-3 py-2.5 text-sm font-mono text-white focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-amber-300 mb-1">Fuel Cost (Rs.)</label>
+                            <input type="number" min="0" id="fFuelCost" readonly oninput="recalcFormLive()" class="w-full bg-slate-800/90 border border-amber-500/40 rounded-xl px-3 py-2.5 text-sm font-mono font-bold text-amber-300 focus:outline-none">
+                        </div>
+                    </div>
+                    <p id="fuelFormulaHint" class="text-[11px] text-slate-400">
+                        Formula: (0 km &divide; 45 km/L) &times; Rs. 311 = 0.00 Liters used
+                    </p>
+                </div>
+
+                <!-- Row 3: Daily Expenses (Maint, Kama Bima, Extra) -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-xs text-slate-300 mb-1">🔧 Bike Maint. (Rs.)</label>
+                        <input type="number" min="0" id="fMaint" oninput="recalcFormLive()" placeholder="0" class="w-full bg-slate-900 border border-slate-700 focus:border-rose-500 rounded-xl px-3 py-2.5 text-sm font-mono text-white focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-300 mb-1">🍛 Kama Bima (Rs.)</label>
+                        <input type="number" min="0" id="fFood" oninput="recalcFormLive()" placeholder="0" class="w-full bg-slate-900 border border-slate-700 focus:border-cyan-500 rounded-xl px-3 py-2.5 text-sm font-mono text-white focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-pink-300 mb-1">✨ Extra Wiyadam (Rs.)</label>
+                        <input type="number" min="0" id="fExtra" oninput="recalcFormLive()" placeholder="0" class="w-full bg-slate-900 border border-slate-700 focus:border-pink-500 rounded-xl px-3 py-2.5 text-sm font-mono text-white focus:outline-none">
+                    </div>
+                </div>
+
+                <!-- Row 4: Note -->
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">Short Note (Optional)</label>
+                    <input type="text" id="fNote" placeholder="e.g. Evening rides, chain lube, badu gaththa..." class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none">
+                </div>
+
+                <!-- Live Daily Net Profit ("Eda Dawase Labaya") Banner -->
+                <div id="liveProfitBox" class="bg-emerald-950/30 border border-emerald-500/40 rounded-xl p-4 flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <span class="text-[11px] uppercase tracking-wider text-slate-300 block">Eda Dawase Labaya (Today's Net Profit)</span>
+                        <span id="liveProfitBreakdown" class="text-xs text-slate-400">Income Rs. 0 &minus; Daily Expenses Rs. 0</span>
+                    </div>
+                    <div id="liveProfitAmount" class="font-mono text-xl sm:text-2xl font-extrabold text-emerald-400">
+                        Rs. 0
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2.5 pt-2">
+                    <button type="button" onclick="closeRideModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs sm:text-sm font-medium transition">Cancel</button>
+                    <button type="submit" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white text-xs sm:text-sm font-semibold shadow-lg transition">Save Entry</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 2: DUAL BANK TRANSACTION / TRANSFER / DIRECT BALANCE EDIT       -->
+    <!-- ===================================================================== -->
+    <div id="bankModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
+        <div class="glass-panel border-slate-700 rounded-2xl max-w-md w-full p-5 sm:p-6">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+                <h3 id="bankModalTitle" class="font-bold text-base text-white">Dual Bank Transaction</h3>
+                <button onclick="closeBankModal()" class="w-8 h-8 rounded-lg bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="saveBankTx(event)" class="mt-4 space-y-3.5">
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">Action Type</label>
+                    <select id="bType" onchange="toggleBankFormMode()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-white">
+                        <option value="deposit">Deposit (+ Add to Account)</option>
+                        <option value="withdraw">Withdraw (- Take from Account)</option>
+                        <option value="transfer">Transfer Between Account 1 &amp; Account 2</option>
+                    </select>
+                </div>
+
+                <div id="bSingleAccountRow">
+                    <label class="block text-xs text-slate-300 mb-1">Account</label>
+                    <select id="bAccount" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-white">
+                        <option value="acc1">Account 1 (Ithuru / Unit Trust)</option>
+                        <option value="acc2">Account 2 (Wiyadam / Main Bank)</option>
+                    </select>
+                </div>
+
+                <div id="bTransferRow" class="hidden grid grid-cols-2 gap-2.5">
+                    <div>
+                        <label class="block text-xs text-slate-300 mb-1">From Account</label>
+                        <select id="bFromAccount" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-white">
+                            <option value="acc2">Account 2 (Main)</option>
+                            <option value="acc1">Account 1 (Savings)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-300 mb-1">To Account</label>
+                        <select id="bToAccount" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-white">
+                            <option value="acc1">Account 1 (Savings)</option>
+                            <option value="acc2">Account 2 (Main)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2.5">
+                    <div>
+                        <label class="block text-xs text-slate-300 mb-1">Date</label>
+                        <input type="date" id="bDate" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-300 mb-1">Amount (Rs.)</label>
+                        <input type="number" min="1" id="bAmount" required placeholder="e.g. 5000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm font-mono text-white">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">Note (Optional)</label>
+                    <input type="text" id="bNote" placeholder="e.g. Profit moved to Unit Trust" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-white">
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeBankModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 text-slate-300 text-xs font-medium">Cancel</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold">Save Transaction</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 2B: DIRECT ACCOUNT BALANCE & NAME EDITOR                        -->
+    <!-- ===================================================================== -->
+    <div id="editBalanceModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
+        <div class="glass-panel border-slate-700 rounded-2xl max-w-sm w-full p-5 sm:p-6">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+                <h3 class="font-bold text-base text-white">Update Account Balance</h3>
+                <button onclick="closeEditBalanceModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="saveDirectAccountBalance(event)" class="mt-4 space-y-3.5">
+                <input type="hidden" id="editAccKey">
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">Account Label</label>
+                    <input type="text" id="editAccName" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-white">
+                </div>
+                <div>
+                    <label class="block text-xs text-cyan-300 mb-1">Current Balance (Rs.)</label>
+                    <input type="number" min="0" id="editAccBalance" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm font-mono text-white">
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeEditBalanceModal()" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs">Cancel</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold">Update Balance</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 2C: QUICK MONTHLY TARGET EDITOR                                 -->
+    <!-- ===================================================================== -->
+    <div id="quickTargetModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
+        <div class="glass-panel border-slate-700 rounded-2xl max-w-sm w-full p-5 sm:p-6">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+                <h3 class="font-bold text-base text-white">Monthly Income / Salary Target</h3>
+                <button onclick="closeQuickTargetModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="saveQuickTarget(event)" class="mt-4 space-y-3.5">
+                <div>
+                    <label class="block text-xs text-emerald-300 mb-1">Target Gross Income for This Month (Rs.)</label>
+                    <input type="number" min="1000" id="qtAmount" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm font-mono text-white">
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeQuickTargetModal()" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs">Cancel</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold">Save Target</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 3: SETTINGS (TARGET, BOARDING RENT, PETROL, MILEAGE, N160)      -->
+    <!-- ===================================================================== -->
+    <div id="settingsModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+        <div class="glass-panel border-slate-700 rounded-2xl max-w-md w-full p-5 sm:p-6 my-auto">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+                <h3 class="font-bold text-base text-white">Monthly Target, Boarding &amp; N160 Settings</h3>
+                <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="saveSettings(event)" class="mt-4 space-y-3.5">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs text-emerald-300 mb-1">Monthly Salary Target (Rs.)</label>
+                        <input type="number" min="1000" id="sMonthlyTarget" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm font-mono text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-indigo-300 mb-1">Month-End Boarding Rent (Rs.)</label>
+                        <input type="number" min="0" id="sBoardingRent" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm font-mono text-white">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs text-amber-300 mb-1">Petrol Price (Rs./L)</label>
+                        <input type="number" step="0.1" id="sPetrol" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm font-mono text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-cyan-300 mb-1">Default N160 (km/L)</label>
+                        <input type="number" step="0.1" id="sMileage" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm font-mono text-white">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs text-slate-300 mb-1">Current Odometer (km)</label>
+                        <input type="number" step="0.1" id="sOdo" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm font-mono text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-300 mb-1">Last Service ODO (km)</label>
+                        <input type="number" step="0.1" id="sLastService" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm font-mono text-white">
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeSettingsModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 text-slate-300 text-xs">Cancel</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold">Save Settings</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 4: CUSTOM CONFIRMATION DIALOG                                   -->
+    <!-- ===================================================================== -->
+    <div id="confirmModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="glass-panel border-slate-700 rounded-2xl max-w-sm w-full p-5 text-center">
+            <div class="w-11 h-11 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center mx-auto mb-3">
+                <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+            </div>
+            <h3 id="confirmTitle" class="font-bold text-base text-white">Are you sure?</h3>
+            <p id="confirmDesc" class="text-xs text-slate-400 mt-1.5">This action cannot be undone.</p>
+            <div class="flex justify-center gap-3 mt-5">
+                <button onclick="closeConfirmModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium">Cancel</button>
+                <button id="confirmYesBtn" class="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- APPLICATION LOGIC (PURE VANILLA JS + LOCALSTORAGE)                    -->
+    <!-- ===================================================================== -->
+    <script>
+        const STORAGE_KEY = 'kaviwealth_pro_n160_v2';
+
+        function daysAgoStr(days) {
+            const d = new Date();
+            d.setDate(d.getDate() - days);
+            return d.toISOString().split('T')[0];
+        }
+
+        function isSameMonth(dateStr, refDate = new Date()) {
+            const d = new Date(dateStr + 'T00:00:00');
+            return d.getMonth() === refDate.getMonth() && d.getFullYear() === refDate.getFullYear();
+        }
+
+        const defaultData = {
+            isDemo: true,
+            settings: {
+                petrolPrice: 311,
+                defaultMileage: 45,
+                monthlyIncomeTarget: 220000,
+                monthlyBoardingRent: 12000,
+                currentOdo: 15462,
+                lastServiceOdo: 15000,
+                serviceInterval: 2500
+            },
+            accounts: {
+                acc1Name: 'Account 1: Ithuru / Unit Trust',
+                acc1Balance: 47500,
+                acc2Name: 'Account 2: Wiyadam / Main Bank',
+                acc2Balance: 14500
+            },
+            rides: [
+                {
+                    id: 'r1',
+                    date: daysAgoStr(3),
+                    pickme: 4300,
+                    uber: 3400,
+                    km: 118,
+                    mileage: 45.5,
+                    petrolPrice: 311,
+                    fuelCost: 807,
+                    maint: 0,
+                    food: 950,
+                    extra: 350,
+                    note: 'Lunch peak + evening rides'
+                },
+                {
+                    id: 'r2',
+                    date: daysAgoStr(2),
+                    pickme: 3900,
+                    uber: 3850,
+                    km: 124,
+                    mileage: 44.5,
+                    petrolPrice: 311,
+                    fuelCost: 867,
+                    maint: 450,
+                    food: 1050,
+                    extra: 650,
+                    note: 'Chain lube + coffee break'
+                },
+                {
+                    id: 'r3',
+                    date: daysAgoStr(1),
+                    pickme: 4850,
+                    uber: 3650,
+                    km: 110,
+                    mileage: 46.0,
+                    petrolPrice: 311,
+                    fuelCost: 744,
+                    maint: 0,
+                    food: 900,
+                    extra: 200,
+                    note: 'Eco mileage + rain surge'
+                },
+                {
+                    id: 'r4',
+                    date: daysAgoStr(0),
+                    pickme: 4400,
+                    uber: 3200,
+                    km: 110,
+                    mileage: 45.0,
+                    petrolPrice: 311,
+                    fuelCost: 760,
+                    maint: 0,
+                    food: 980,
+                    extra: 300,
+                    note: 'Steady Colombo rides'
+                }
+            ],
+            bankTxs: [
+                {
+                    id: 'b1',
+                    date: daysAgoStr(3),
+                    type: 'deposit',
+                    account: 'acc1',
+                    amount: 35000,
+                    note: 'Unit Trust initial deposit'
+                },
+                {
+                    id: 'b2',
+                    date: daysAgoStr(1),
+                    type: 'deposit',
+                    account: 'acc1',
+                    amount: 12500,
+                    note: 'Weekly savings transfer'
+                },
+                {
+                    id: 'b3',
+                    date: daysAgoStr(0),
+                    type: 'deposit',
+                    account: 'acc2',
+                    amount: 14500,
+                    note: 'Main bank operating balance'
+                }
+            ]
+        };
+
+        let state = loadAppState();
+
+        function loadAppState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) return JSON.parse(raw);
+            } catch (err) {
+                console.error('Error reading storage', err);
+            }
+            return JSON.parse(JSON.stringify(defaultData));
+        }
+
+        function persistState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            } catch (err) {
+                notify('Warning: Browser storage is full.', 'error');
+            }
+        }
+
+        function fmtRs(val) {
+            const num = Math.round(Number(val) || 0);
+            return 'Rs. ' + num.toLocaleString('en-LK');
+        }
+
+        function notify(msg, type = 'success') {
+            const box = document.getElementById('toastContainer');
+            const el = document.createElement('div');
+            const style = type === 'error'
+                ? 'bg-rose-950/95 border-rose-500/50 text-rose-200'
+                : 'bg-slate-900/95 border-emerald-500/50 text-emerald-200';
+            const icon = type === 'error' ? 'fa-circle-exclamation text-rose-400' : 'fa-circle-check text-emerald-400';
+            el.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-xl border shadow-2xl backdrop-blur-md text-xs sm:text-sm transition-all duration-300 ${style}`;
+            el.innerHTML = `<i class="fa-solid ${icon}"></i><span>${msg}</span>`;
+            box.appendChild(el);
+            setTimeout(() => {
+                el.style.opacity = '0';
+                setTimeout(() => el.remove(), 300);
+            }, 3000);
+        }
+
+        function sumRides(ridesList) {
+            let pickme = 0, uber = 0, km = 0, fuel = 0, maint = 0, food = 0, extra = 0, weightedMileageSum = 0;
+            ridesList.forEach(r => {
+                pickme += Number(r.pickme) || 0;
+                uber += Number(r.uber) || 0;
+                const rKm = Number(r.km) || 0;
+                km += rKm;
+                weightedMileageSum += rKm * (Number(r.mileage) || state.settings.defaultMileage);
+                fuel += Number(r.fuelCost) || 0;
+                maint += Number(r.maint) || 0;
+                food += Number(r.food) || 0;
+                extra += Number(r.extra) || 0;
+            });
+            const grossIncome = pickme + uber;
+            const dailyExpenses = fuel + maint + food + extra;
+            return { pickme, uber, km, fuel, maint, food, extra, grossIncome, dailyExpenses, weightedMileageSum };
+        }
+
+        function getFilteredRides() {
+            const period = document.getElementById('periodFilter').value;
+            const now = new Date();
+            const todayIso = now.toISOString().split('T')[0];
+
+            return state.rides
+                .filter(r => {
+                    if (period === 'all') return true;
+                    if (period === 'today') return r.date === todayIso;
+                    const d = new Date(r.date + 'T00:00:00');
+                    if (period === 'week') {
+                        const cutoff = new Date();
+                        cutoff.setDate(now.getDate() - 7);
+                        cutoff.setHours(0, 0, 0, 0);
+                        return d >= cutoff;
+                    }
+                    if (period === 'month') {
+                        return isSameMonth(r.date, now);
+                    }
+                    return true;
+                })
+                .sort((a, b) => new Date(b.date) - new Date(a.date));
+        }
+
+        function refreshDashboard() {
+            document.getElementById('demoBanner').classList.toggle('hidden', !state.isDemo);
+
+            const period = document.getElementById('periodFilter').value;
+            const filteredRides = getFilteredRides();
+            const monthRides = state.rides.filter(r => isSameMonth(r.date));
+
+            const pStats = sumRides(filteredRides);
+            const mStats = sumRides(monthRides);
+
+            const boardingRent = Number(state.settings.monthlyBoardingRent) || 0;
+            // Include boarding rent in monthly calculation, and in period calculation if viewing month/all
+            const periodBoarding = (period === 'month' || period === 'all') ? boardingRent : 0;
+            const totalPeriodExpense = pStats.dailyExpenses + periodBoarding;
+            const periodNetProfit = pStats.grossIncome - totalPeriodExpense;
+            const avgDailyProfit = filteredRides.length > 0 ? (periodNetProfit / filteredRides.length) : 0;
+
+            const monthTotalExpense = mStats.dailyExpenses + boardingRent;
+            const monthNetProfit = mStats.grossIncome - monthTotalExpense;
+
+            const acc1Bal = Number(state.accounts.acc1Balance) || 0;
+            const acc2Bal = Number(state.accounts.acc2Balance) || 0;
+            const totalBankBal = acc1Bal + acc2Bal;
+
+            // Update KPI Cards
+            document.getElementById('kpiGrossIncome').textContent = fmtRs(pStats.grossIncome);
+            document.getElementById('kpiSplitIncome').innerHTML = `
+                <span class="text-amber-400">PM: ${fmtRs(pStats.pickme)}</span> &bull; 
+                <span class="text-emerald-400">UE: ${fmtRs(pStats.uber)}</span>
+            `;
+
+            document.getElementById('kpiTotalExpense').textContent = fmtRs(totalPeriodExpense);
+            document.getElementById('kpiFuelSummary').textContent = `Fuel: ${fmtRs(pStats.fuel)} • Other: ${fmtRs(totalPeriodExpense - pStats.fuel)}`;
+
+            const profitEl = document.getElementById('kpiNetProfit');
+            profitEl.textContent = fmtRs(periodNetProfit);
+            profitEl.className = `font-mono text-base sm:text-2xl font-bold ${periodNetProfit >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
+            document.getElementById('kpiAvgDailyProfit').textContent = `Avg: ${fmtRs(avgDailyProfit)} / riding day`;
+
+            document.getElementById('kpiBankBalance').textContent = fmtRs(totalBankBal);
+
+            // Update Monthly Health Status Banner
+            evaluateMonthlyHealth({
+                monthIncome: mStats.grossIncome,
+                monthExpense: monthTotalExpense,
+                monthNetProfit,
+                monthExtra: mStats.extra,
+                boardingRent,
+                totalBankBal,
+                hasMonthRides: monthRides.length > 0
+            });
+
+            // Update Monthly Income / Salary Target Card
+            updateMonthlyTargetCard(mStats.grossIncome, boardingRent);
+
+            // Update Dual Bank Cards & Ledger
+            renderDualBankSection(acc1Bal, acc2Bal);
+
+            // Update Expense Donut & Bars (includes month-end boarding rent)
+            renderExpenseAnalytics(pStats.grossIncome, {
+                fuel: pStats.fuel,
+                maint: pStats.maint,
+                food: pStats.food,
+                extra: pStats.extra,
+                boarding: periodBoarding,
+                profit: Math.max(0, periodNetProfit)
+            });
+
+            // Update N160 Telemetry
+            updateN160Card(pStats.km, pStats.weightedMileageSum, periodNetProfit);
+
+            // Update Daily Table
+            renderDailyTable();
+        }
+
+        // =====================================================================
+        // MONTHLY HEALTH STATUS ENGINE ("Hoda Mattamaka" vs "Awadanam")
+        // =====================================================================
+        function evaluateMonthlyHealth({ monthIncome, monthExpense, monthNetProfit, monthExtra, boardingRent, totalBankBal, hasMonthRides }) {
+            document.getElementById('monthSummaryIncome').textContent = fmtRs(monthIncome);
+            const mExpEl = document.getElementById('monthSummaryExpense');
+            mExpEl.textContent = fmtRs(monthExpense);
+            const mProfEl = document.getElementById('monthSummaryProfit');
+            mProfEl.textContent = fmtRs(monthNetProfit);
+            mProfEl.className = `font-mono text-xs sm:text-base font-bold mt-0.5 block ${monthNetProfit >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
+
+            document.getElementById('boardingStatusBadge').textContent = `Month-End Boarding: ${fmtRs(boardingRent)}`;
+            document.getElementById('boardingFootnoteAmt').textContent = fmtRs(boardingRent);
+
+            const card = document.getElementById('safetyZoneCard');
+            const badge = document.getElementById('safetyBadge');
+            const titleEl = document.getElementById('safetyZoneTitle');
+            const scoreEl = document.getElementById('safetyScoreText');
+            const headlineEl = document.getElementById('safetyHeadline');
+            const adviceEl = document.getElementById('safetyAdvice');
+            const pointer = document.getElementById('safetyPointer');
+
+            if (!hasMonthRides && totalBankBal === 0) {
+                titleEl.textContent = 'READY TO START';
+                scoreEl.textContent = 'Net Margin: 0%';
+                headlineEl.textContent = 'Add your daily rides to check your Monthly Health Status.';
+                adviceEl.textContent = 'KaviWealth compares your monthly income against daily expenses, month-end boarding rent, and bank balances.';
+                pointer.style.marginLeft = '50%';
+                return;
+            }
+
+            const profitMargin = monthIncome > 0 ? Math.round((monthNetProfit / monthIncome) * 100) : (monthExpense > 0 ? -100 : 0);
+            const extraPct = monthIncome > 0 ? Math.round((monthExtra / monthIncome) * 100) : 0;
+            const coversBoarding = totalBankBal + Math.max(0, monthNetProfit) >= boardingRent;
+
+            scoreEl.textContent = `Net Margin: ${profitMargin}%`;
+            const clampedPtr = Math.min(95, Math.max(3, (profitMargin + 20) * 1.3));
+            pointer.style.marginLeft = `${clampedPtr}%`;
+
+            const isDanger = monthNetProfit < 0 || profitMargin < 20 || !coversBoarding;
+            const isCaution = !isDanger && (profitMargin < 35 || extraPct > 18);
+
+            if (isDanger) {
+                card.className = 'glass-panel rounded-2xl p-4 sm:p-6 border-l-4 border-l-rose-500 transition-all';
+                badge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-rose-500/20 text-rose-300 border border-rose-500/40';
+                pointer.className = 'w-4 h-4 rounded-full bg-white border-2 border-rose-500 shadow-md -mt-0.5 transition-all duration-500';
+                titleEl.textContent = 'AWADANAM / ATTENTION NEEDED';
+                headlineEl.textContent = 'Awadanam! Mase wiyadam saha boarding rent ekathu unama net profit eka adui — poddak parissam wenna.';
+                adviceEl.textContent = `Margin is ${profitMargin}%, Extra is ${extraPct}%, and combined bank balance is ${fmtRs(totalBankBal)}. Control Extra spending and keep steady daily rides.`;
+            } else if (isCaution) {
+                card.className = 'glass-panel rounded-2xl p-4 sm:p-6 border-l-4 border-l-amber-500 transition-all';
+                badge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/40';
+                pointer.className = 'w-4 h-4 rounded-full bg-white border-2 border-amber-500 shadow-md -mt-0.5 transition-all duration-500';
+                titleEl.textContent = 'MODERATE / WATCH EXTRA';
+                headlineEl.textContent = 'Shape eke yanawa, habai Extra wiyadam poddak adu kaloth Hoda Mattamaka (Safe) level ekata enna puluwan.';
+                adviceEl.textContent = `Month-end boarding (${fmtRs(boardingRent)}) is covered, but net margin is ${profitMargin}%. Keep daily Extra expenses low.`;
+            } else {
+                card.className = 'glass-panel rounded-2xl p-4 sm:p-6 border-l-4 border-l-emerald-500 transition-all';
+                badge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
+                pointer.className = 'w-4 h-4 rounded-full bg-white border-2 border-emerald-500 shadow-md -mt-0.5 transition-all duration-500';
+                titleEl.textContent = 'HODA MATTAMAKA (SAFE)';
+                headlineEl.textContent = 'Hoda Mattamaka (Safe)! Mase adayama, wiyadam, boarding rent saha bank balances hoda safe level ekaka thiyanawa.';
+                adviceEl.textContent = `Strong monthly health: ${profitMargin}% net margin, Extra spending is ${extraPct}%, and your dual bank balance is ${fmtRs(totalBankBal)}.`;
+            }
+        }
+
+        // =====================================================================
+        // MONTHLY INCOME / SALARY TARGET TRACKER
+        // =====================================================================
+        function updateMonthlyTargetCard(monthEarned, boardingRent) {
+            const target = Number(state.settings.monthlyIncomeTarget) || 220000;
+            const remaining = Math.max(0, target - monthEarned);
+            const pct = Math.min(100, Math.round((monthEarned / target) * 100));
+
+            document.getElementById('monthlyEarnedDisplay').textContent = fmtRs(monthEarned);
+            document.getElementById('monthlyTargetDisplay').textContent = fmtRs(target);
+            document.getElementById('monthlyTargetPctDisplay').textContent = `${pct}%`;
+            document.getElementById('monthlyTargetBar').style.width = `${pct}%`;
+            document.getElementById('monthlyRemainingDisplay').textContent = remaining === 0 ? 'Target Reached!' : fmtRs(remaining);
+            document.getElementById('monthlyBoardingCardDisplay').textContent = fmtRs(boardingRent);
+
+            const now = new Date();
+            const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+            const daysLeft = Math.max(1, daysInMonth - now.getDate());
+            const neededPerDay = remaining > 0 ? Math.ceil(remaining / daysLeft) : 0;
+
+            document.getElementById('monthlyPaceHint').textContent = remaining > 0
+                ? `${daysLeft} days left this month • Need ~${fmtRs(neededPerDay)}/day to hit target`
+                : `Monthly income target achieved!`;
+        }
+
+        // =====================================================================
+        // DUAL BANK ACCOUNTS & TRANSACTIONS
+        // =====================================================================
+        function renderDualBankSection(acc1Bal, acc2Bal) {
+            document.getElementById('acc1NameDisplay').textContent = state.accounts.acc1Name || 'Account 1: Savings';
+            document.getElementById('acc2NameDisplay').textContent = state.accounts.acc2Name || 'Account 2: Main Bank';
+            document.getElementById('acc1BalanceDisplay').textContent = fmtRs(acc1Bal);
+            document.getElementById('acc2BalanceDisplay').textContent = fmtRs(acc2Bal);
+
+            const listEl = document.getElementById('bankTxList');
+            const sorted = [...state.bankTxs].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            if (sorted.length === 0) {
+                listEl.innerHTML = `<p class="text-xs text-slate-500 text-center py-3">No account transactions logged yet. Use "+ / - Tx" or "Set" to update balances.</p>`;
+                return;
+            }
+
+            listEl.innerHTML = sorted.map(tx => {
+                const isTransfer = tx.type === 'transfer';
+                const isDep = tx.type === 'deposit';
+                let badgeText = '';
+                let amtColor = '';
+
+                if (isTransfer) {
+                    const fromLbl = tx.fromAccount === 'acc1' ? 'Acc 1' : 'Acc 2';
+                    const toLbl = tx.toAccount === 'acc1' ? 'Acc 1' : 'Acc 2';
+                    badgeText = `${fromLbl} → ${toLbl}`;
+                    amtColor = 'text-cyan-400';
+                } else {
+                    const accLbl = tx.account === 'acc1' ? 'Acc 1' : 'Acc 2';
+                    badgeText = `${isDep ? '+' : '-'} ${accLbl}`;
+                    amtColor = isDep ? 'text-emerald-400' : 'text-rose-400';
+                }
+
+                return `
+                    <div class="flex items-center justify-between bg-slate-900/70 border border-slate-800/80 rounded-xl px-3 py-2 text-xs">
+                        <div class="min-w-0 pr-2">
+                            <div class="flex items-center gap-1.5">
+                                <span class="font-mono font-semibold ${amtColor}">${fmtRs(tx.amount)}</span>
+                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 font-semibold">${badgeText}</span>
+                            </div>
+                            <p class="text-[11px] text-slate-400 truncate mt-0.5">${tx.date}${tx.note ? ' • ' + tx.note : ''}</p>
+                        </div>
+                        <button onclick="confirmDeleteBankTx('${tx.id}')" class="text-slate-500 hover:text-rose-400 p-1.5 shrink-0" title="Delete transaction">
+                            <i class="fa-solid fa-trash text-xs"></i>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openBankTxModal(defaultType = 'deposit') {
+            document.getElementById('bType').value = defaultType;
+            document.getElementById('bDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('bAmount').value = '';
+            document.getElementById('bNote').value = '';
+            toggleBankFormMode();
+            document.getElementById('bankModal').classList.remove('hidden');
+        }
+        function closeBankModal() { document.getElementById('bankModal').classList.add('hidden'); }
+
+        function toggleBankFormMode() {
+            const isTransfer = document.getElementById('bType').value === 'transfer';
+            document.getElementById('bSingleAccountRow').classList.toggle('hidden', isTransfer);
+            document.getElementById('bTransferRow').classList.toggle('hidden', !isTransfer);
+        }
+
+        function saveBankTx(e) {
+            e.preventDefault();
+            const type = document.getElementById('bType').value;
+            const amount = Number(document.getElementById('bAmount').value) || 0;
+            const date = document.getElementById('bDate').value;
+            const note = document.getElementById('bNote').value.trim();
+
+            if (amount <= 0) return;
+
+            if (type === 'transfer') {
+                const fromAcc = document.getElementById('bFromAccount').value;
+                const toAcc = document.getElementById('bToAccount').value;
+                if (fromAcc === toAcc) {
+                    notify('Choose two different accounts to transfer!', 'error');
+                    return;
+                }
+                if (fromAcc === 'acc1') {
+                    state.accounts.acc1Balance = Math.max(0, (Number(state.accounts.acc1Balance) || 0) - amount);
+                    state.accounts.acc2Balance = (Number(state.accounts.acc2Balance) || 0) + amount;
+                } else {
+                    state.accounts.acc2Balance = Math.max(0, (Number(state.accounts.acc2Balance) || 0) - amount);
+                    state.accounts.acc1Balance = (Number(state.accounts.acc1Balance) || 0) + amount;
+                }
+                state.bankTxs.push({ id: 'tx_' + Date.now(), type: 'transfer', fromAccount: fromAcc, toAccount: toAcc, date, amount, note });
+                notify('Transfer completed!');
+            } else {
+                const acc = document.getElementById('bAccount').value;
+                const delta = type === 'deposit' ? amount : -amount;
+                if (acc === 'acc1') {
+                    state.accounts.acc1Balance = Math.max(0, (Number(state.accounts.acc1Balance) || 0) + delta);
+                } else {
+                    state.accounts.acc2Balance = Math.max(0, (Number(state.accounts.acc2Balance) || 0) + delta);
+                }
+                state.bankTxs.push({ id: 'tx_' + Date.now(), type, account: acc, date, amount, note });
+                notify(type === 'deposit' ? 'Balance deposited!' : 'Withdrawal recorded!');
+            }
+
+            persistState();
+            closeBankModal();
+            refreshDashboard();
+        }
+
+        function openEditBalanceModal(accKey) {
+            document.getElementById('editAccKey').value = accKey;
+            if (accKey === 'acc1') {
+                document.getElementById('editAccName').value = state.accounts.acc1Name;
+                document.getElementById('editAccBalance').value = state.accounts.acc1Balance;
+            } else {
+                document.getElementById('editAccName').value = state.accounts.acc2Name;
+                document.getElementById('editAccBalance').value = state.accounts.acc2Balance;
+            }
+            document.getElementById('editBalanceModal').classList.remove('hidden');
+        }
+        function closeEditBalanceModal() { document.getElementById('editBalanceModal').classList.add('hidden'); }
+
+        function saveDirectAccountBalance(e) {
+            e.preventDefault();
+            const key = document.getElementById('editAccKey').value;
+            const name = document.getElementById('editAccName').value.trim();
+            const bal = Math.max(0, Number(document.getElementById('editAccBalance').value) || 0);
+
+            if (key === 'acc1') {
+                state.accounts.acc1Name = name || 'Account 1: Savings';
+                state.accounts.acc1Balance = bal;
+            } else {
+                state.accounts.acc2Name = name || 'Account 2: Main Bank';
+                state.accounts.acc2Balance = bal;
+            }
+            persistState();
+            closeEditBalanceModal();
+            refreshDashboard();
+            notify('Account balance updated!');
+        }
+
+        // =====================================================================
+        // QUICK MONTHLY TARGET MODAL
+        // =====================================================================
+        function openQuickTargetModal() {
+            document.getElementById('qtAmount').value = state.settings.monthlyIncomeTarget || 220000;
+            document.getElementById('quickTargetModal').classList.remove('hidden');
+        }
+        function closeQuickTargetModal() { document.getElementById('quickTargetModal').classList.add('hidden'); }
+
+        function saveQuickTarget(e) {
+            e.preventDefault();
+            state.settings.monthlyIncomeTarget = Math.max(1000, Number(document.getElementById('qtAmount').value) || 220000);
+            persistState();
+            closeQuickTargetModal();
+            refreshDashboard();
+            notify('Monthly income target updated!');
+        }
+
+        // =====================================================================
+        // EXPENSE BREAKDOWN SVG DONUT & PROGRESS BARS
+        // =====================================================================
+        function renderExpenseAnalytics(grossIncome, breakdown) {
+            document.getElementById('donutCenterTotal').textContent = fmtRs(grossIncome);
+
+            const categories = [
+                { key: 'profit', label: 'Net Profit (Labaya)', val: breakdown.profit, color: '#10B981', textCol: 'text-emerald-400', barCol: 'bg-emerald-500' },
+                { key: 'fuel', label: 'Auto-Calculated Fuel', val: breakdown.fuel, color: '#F59E0B', textCol: 'text-amber-400', barCol: 'bg-amber-500' },
+                { key: 'food', label: 'Kama Bima', val: breakdown.food, color: '#06B6D4', textCol: 'text-cyan-400', barCol: 'bg-cyan-500' },
+                { key: 'extra', label: 'Extra Wiyadam', val: breakdown.extra, color: '#EC4899', textCol: 'text-pink-400', barCol: 'bg-pink-500' },
+                { key: 'maint', label: 'Bike Maintenance', val: breakdown.maint, color: '#F43F5E', textCol: 'text-rose-400', barCol: 'bg-rose-500' },
+                { key: 'boarding', label: 'Month-End Boarding', val: breakdown.boarding, color: '#6366F1', textCol: 'text-indigo-400', barCol: 'bg-indigo-500' }
+            ];
+
+            const totalAllocated = categories.reduce((s, c) => s + c.val, 0);
+            const svg = document.getElementById('donutSvg');
+            const radius = 58;
+            const circumference = 2 * Math.PI * radius;
+
+            if (totalAllocated <= 0) {
+                svg.innerHTML = `<circle cx="80" cy="80" r="${radius}" fill="transparent" stroke="#1E293B" stroke-width="18"></circle>`;
+            } else {
+                let offset = 0;
+                svg.innerHTML = categories.map(cat => {
+                    if (cat.val <= 0) return '';
+                    const sliceLen = (cat.val / totalAllocated) * circumference;
+                    const circle = `<circle cx="80" cy="80" r="${radius}" fill="transparent" stroke="${cat.color}" stroke-width="18" stroke-dasharray="${sliceLen} ${circumference}" stroke-dashoffset="-${offset}"></circle>`;
+                    offset += sliceLen;
+                    return circle;
+                }).join('');
+            }
+
+            const barsBox = document.getElementById('categoryBarsContainer');
+            barsBox.innerHTML = categories.map(cat => {
+                const pct = grossIncome > 0 ? Math.round((cat.val / grossIncome) * 100) : 0;
+                return `
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-slate-300 font-medium">${cat.label}</span>
+                            <span class="font-mono font-semibold ${cat.textCol}">${fmtRs(cat.val)} <span class="text-slate-500 text-[10px]">(${pct}%)</span></span>
+                        </div>
+                        <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                            <div class="h-full ${cat.barCol} rounded-full transition-all duration-500" style="width: ${Math.min(100, pct)}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // =====================================================================
+        // PULSAR N160 TELEMETRY CARD
+        // =====================================================================
+        function updateN160Card(periodKm, weightedMileageSum, netProfit) {
+            const { currentOdo, lastServiceOdo, serviceInterval } = state.settings;
+            const nextService = Number(lastServiceOdo) + Number(serviceInterval);
+            const drivenSinceService = Math.max(0, currentOdo - lastServiceOdo);
+            const kmLeft = nextService - currentOdo;
+            const pct = Math.min(100, Math.max(0, (drivenSinceService / serviceInterval) * 100));
+
+            document.getElementById('n160OdoDisplay').textContent = `${Number(currentOdo).toLocaleString()} km`;
+            document.getElementById('n160NextServiceDisplay').textContent = `${nextService.toLocaleString()} km`;
+            document.getElementById('n160LastServiceLabel').textContent = `Last: ${Number(lastServiceOdo).toLocaleString()} km`;
+            document.getElementById('n160ServiceBar').style.width = `${pct}%`;
+
+            const kmLeftEl = document.getElementById('n160KmLeftLabel');
+            if (kmLeft <= 0) {
+                kmLeftEl.textContent = `Overdue by ${Math.abs(kmLeft)} km!`;
+                kmLeftEl.className = 'font-bold text-rose-400';
+            } else if (kmLeft <= 350) {
+                kmLeftEl.textContent = `${kmLeft} km left (Service Soon)`;
+                kmLeftEl.className = 'font-semibold text-amber-400';
+            } else {
+                kmLeftEl.textContent = `${kmLeft.toLocaleString()} km left`;
+                kmLeftEl.className = 'font-semibold text-emerald-400';
+            }
+
+            document.getElementById('n160PeriodKm').textContent = `${periodKm.toLocaleString()} km`;
+            const avgMileage = periodKm > 0 ? (weightedMileageSum / periodKm).toFixed(1) : Number(state.settings.defaultMileage).toFixed(1);
+            document.getElementById('n160AvgMileage').textContent = `${avgMileage} km/L`;
+
+            const profitPerKm = periodKm > 0 ? (netProfit / periodKm).toFixed(1) : '0.0';
+            document.getElementById('n160ProfitPerKm').textContent = `Rs. ${profitPerKm}`;
+        }
+
+        function markServiceDone() {
+            openConfirm('Reset N160 Service Counter?', `Set last full service odometer to current ${state.settings.currentOdo} km?`, () => {
+                state.settings.lastServiceOdo = state.settings.currentOdo;
+                persistState();
+                refreshDashboard();
+                notify('N160 service counter reset!');
+            });
+        }
+
+        // =====================================================================
+        // DAILY LEDGER TABLE (WITH FULL EDIT & DELETE)
+        // =====================================================================
+        function renderDailyTable() {
+            const tbody = document.getElementById('dailyTableBody');
+            const emptyMsg = document.getElementById('emptyTableMessage');
+            const q = document.getElementById('tableSearch').value.toLowerCase().trim();
+
+            const list = getFilteredRides().filter(r => {
+                if (!q) return true;
+                return r.date.includes(q) || (r.note && r.note.toLowerCase().includes(q));
+            });
+
+            if (list.length === 0) {
+                tbody.innerHTML = '';
+                emptyMsg.classList.remove('hidden');
+                return;
+            }
+            emptyMsg.classList.add('hidden');
+
+            tbody.innerHTML = list.map(r => {
+                const inc = (Number(r.pickme) || 0) + (Number(r.uber) || 0);
+                const exp = (Number(r.fuelCost) || 0) + (Number(r.maint) || 0) + (Number(r.food) || 0) + (Number(r.extra) || 0);
+                const profit = inc - exp;
+
+                return `
+                    <tr class="hover:bg-slate-800/40 transition">
+                        <td class="py-3 px-3 whitespace-nowrap">
+                            <div class="font-semibold text-white">${r.date}</div>
+                            ${r.note ? `<div class="text-[11px] text-slate-400 truncate max-w-[140px]">${r.note}</div>` : ''}
+                        </td>
+                        <td class="py-3 px-3 whitespace-nowrap">
+                            <div class="font-mono font-semibold text-white">${fmtRs(inc)}</div>
+                            <div class="text-[10px] text-slate-400">PM ${r.pickme || 0} &bull; UE ${r.uber || 0}</div>
+                        </td>
+                        <td class="py-3 px-3 whitespace-nowrap">
+                            <div class="font-mono text-amber-300 font-semibold">${fmtRs(r.fuelCost)}</div>
+                            <div class="text-[10px] text-slate-400">${r.km} km @ ${r.mileage} km/L</div>
+                        </td>
+                        <td class="py-3 px-3 whitespace-nowrap font-mono text-slate-300">${fmtRs(r.maint)}</td>
+                        <td class="py-3 px-3 whitespace-nowrap font-mono text-cyan-300">${fmtRs(r.food)}</td>
+                        <td class="py-3 px-3 whitespace-nowrap font-mono text-pink-300">${fmtRs(r.extra)}</td>
+                        <td class="py-3 px-3 whitespace-nowrap font-mono font-bold ${profit >= 0 ? 'text-emerald-400' : 'text-rose-400'}">
+                            ${fmtRs(profit)}
+                        </td>
+                        <td class="py-3 px-3 whitespace-nowrap text-right">
+                            <button onclick="openRideModal('${r.id}')" class="text-slate-300 hover:text-white p-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 transition mr-1" title="Edit Entry">
+                                <i class="fa-solid fa-pen text-xs"></i>
+                            </button>
+                            <button onclick="confirmDeleteRide('${r.id}')" class="text-rose-400 hover:text-rose-200 p-2 rounded-lg bg-rose-950/40 hover:bg-rose-900/60 transition" title="Delete Entry">
+                                <i class="fa-solid fa-trash text-xs"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // =====================================================================
+        // MODAL 1: RIDE FORM & LIVE CALCULATOR
+        // =====================================================================
+        function openRideModal(editId = null) {
+            const form = document.getElementById('rideForm');
+            form.reset();
+            document.getElementById('fManualFuelToggle').checked = false;
+            document.getElementById('fFuelCost').readOnly = true;
+
+            if (editId) {
+                const r = state.rides.find(x => x.id === editId);
+                if (!r) return;
+                document.getElementById('rideModalTitle').textContent = 'Edit Ride & Expense Entry';
+                document.getElementById('editRideId').value = r.id;
+                document.getElementById('fDate').value = r.date;
+                document.getElementById('fPickme').value = r.pickme || '';
+                document.getElementById('fUber').value = r.uber || '';
+                document.getElementById('fKm').value = r.km || '';
+                document.getElementById('fMileage').value = r.mileage || state.settings.defaultMileage;
+                document.getElementById('fPetrolPrice').value = r.petrolPrice || state.settings.petrolPrice;
+                document.getElementById('fFuelCost').value = r.fuelCost || 0;
+                document.getElementById('fMaint').value = r.maint || '';
+                document.getElementById('fFood').value = r.food || '';
+                document.getElementById('fExtra').value = r.extra || '';
+                document.getElementById('fNote').value = r.note || '';
+            } else {
+                document.getElementById('rideModalTitle').textContent = "Log Today's Ride & Expenses";
+                document.getElementById('editRideId').value = '';
+                document.getElementById('fDate').value = new Date().toISOString().split('T')[0];
+                document.getElementById('fMileage').value = state.settings.defaultMileage;
+                document.getElementById('fPetrolPrice').value = state.settings.petrolPrice;
+                document.getElementById('fFuelCost').value = 0;
+            }
+
+            recalcFormLive();
+            document.getElementById('rideModal').classList.remove('hidden');
+        }
+
+        function closeRideModal() {
+            document.getElementById('rideModal').classList.add('hidden');
+        }
+
+        function toggleManualFuel() {
+            const isManual = document.getElementById('fManualFuelToggle').checked;
+            const fuelInput = document.getElementById('fFuelCost');
+            fuelInput.readOnly = !isManual;
+            fuelInput.classList.toggle('bg-slate-900', isManual);
+            fuelInput.classList.toggle('bg-slate-800/90', !isManual);
+            recalcFormLive();
+        }
+
+        function recalcFormLive() {
+            const km = Number(document.getElementById('fKm').value) || 0;
+            const mileage = Number(document.getElementById('fMileage').value) || 45;
+            const petrolPrice = Number(document.getElementById('fPetrolPrice').value) || 311;
+            const isManual = document.getElementById('fManualFuelToggle').checked;
+
+            const litersUsed = mileage > 0 ? (km / mileage) : 0;
+            let fuelCost = 0;
+
+            if (isManual) {
+                fuelCost = Number(document.getElementById('fFuelCost').value) || 0;
+            } else {
+                fuelCost = Math.round(litersUsed * petrolPrice);
+                document.getElementById('fFuelCost').value = fuelCost;
+            }
+
+            document.getElementById('fuelFormulaHint').textContent =
+                `Formula: (${km} km ÷ ${mileage} km/L) × Rs. ${petrolPrice} = ${litersUsed.toFixed(2)} Liters used`;
+
+            const pickme = Number(document.getElementById('fPickme').value) || 0;
+            const uber = Number(document.getElementById('fUber').value) || 0;
+            const maint = Number(document.getElementById('fMaint').value) || 0;
+            const food = Number(document.getElementById('fFood').value) || 0;
+            const extra = Number(document.getElementById('fExtra').value) || 0;
+
+            const totalInc = pickme + uber;
+            const totalExp = fuelCost + maint + food + extra;
+            const netProfit = totalInc - totalExp;
+
+            document.getElementById('liveProfitBreakdown').textContent = `Income ${fmtRs(totalInc)} − Daily Expenses ${fmtRs(totalExp)}`;
+            const amtEl = document.getElementById('liveProfitAmount');
+            const boxEl = document.getElementById('liveProfitBox');
+
+            amtEl.textContent = fmtRs(netProfit);
+            if (netProfit >= 0) {
+                amtEl.className = 'font-mono text-xl sm:text-2xl font-extrabold text-emerald-400';
+                boxEl.className = 'bg-emerald-950/30 border border-emerald-500/40 rounded-xl p-4 flex flex-wrap items-center justify-between gap-3';
+            } else {
+                amtEl.className = 'font-mono text-xl sm:text-2xl font-extrabold text-rose-400';
+                boxEl.className = 'bg-rose-950/30 border border-rose-500/40 rounded-xl p-4 flex flex-wrap items-center justify-between gap-3';
+            }
+        }
+
+        function saveRideEntry(e) {
+            e.preventDefault();
+            const editId = document.getElementById('editRideId').value;
+            const kmVal = Number(document.getElementById('fKm').value) || 0;
+
+            const entry = {
+                id: editId || 'ride_' + Date.now(),
+                date: document.getElementById('fDate').value,
+                pickme: Number(document.getElementById('fPickme').value) || 0,
+                uber: Number(document.getElementById('fUber').value) || 0,
+                km: kmVal,
+                mileage: Number(document.getElementById('fMileage').value) || state.settings.defaultMileage,
+                petrolPrice: Number(document.getElementById('fPetrolPrice').value) || state.settings.petrolPrice,
+                fuelCost: Number(document.getElementById('fFuelCost').value) || 0,
+                maint: Number(document.getElementById('fMaint').value) || 0,
+                food: Number(document.getElementById('fFood').value) || 0,
+                extra: Number(document.getElementById('fExtra').value) || 0,
+                note: document.getElementById('fNote').value.trim()
+            };
+
+            if (editId) {
+                const idx = state.rides.findIndex(x => x.id === editId);
+                if (idx !== -1) {
+                    const oldKm = Number(state.rides[idx].km) || 0;
+                    state.settings.currentOdo = Number(state.settings.currentOdo) + (kmVal - oldKm);
+                    state.rides[idx] = entry;
+                }
+                notify('Ride entry updated!');
+            } else {
+                state.rides.push(entry);
+                state.settings.currentOdo = Number(state.settings.currentOdo) + kmVal;
+                notify('Daily ride logged!');
+            }
+
+            persistState();
+            closeRideModal();
+            refreshDashboard();
+        }
+
+        // =====================================================================
+        // MODAL 3: SETTINGS
+        // =====================================================================
+        function openSettingsModal() {
+            document.getElementById('sMonthlyTarget').value = state.settings.monthlyIncomeTarget || 220000;
+            document.getElementById('sBoardingRent').value = state.settings.monthlyBoardingRent || 0;
+            document.getElementById('sPetrol').value = state.settings.petrolPrice;
+            document.getElementById('sMileage').value = state.settings.defaultMileage;
+            document.getElementById('sOdo').value = state.settings.currentOdo;
+            document.getElementById('sLastService').value = state.settings.lastServiceOdo;
+            document.getElementById('settingsModal').classList.remove('hidden');
+        }
+        function closeSettingsModal() { document.getElementById('settingsModal').classList.add('hidden'); }
+
+        function saveSettings(e) {
+            e.preventDefault();
+            state.settings.monthlyIncomeTarget = Math.max(1000, Number(document.getElementById('sMonthlyTarget').value) || 220000);
+            state.settings.monthlyBoardingRent = Math.max(0, Number(document.getElementById('sBoardingRent').value) || 0);
+            state.settings.petrolPrice = Number(document.getElementById('sPetrol').value);
+            state.settings.defaultMileage = Number(document.getElementById('sMileage').value);
+            state.settings.currentOdo = Number(document.getElementById('sOdo').value);
+            state.settings.lastServiceOdo = Number(document.getElementById('sLastService').value);
+            persistState();
+            closeSettingsModal();
+            refreshDashboard();
+            notify('Settings & month-end boarding rent saved!');
+        }
+
+        // =====================================================================
+        // CONFIRMATION, DELETE & BACKUP / EXPORT
+        // =====================================================================
+        let confirmAction = null;
+
+        function openConfirm(title, desc, callback) {
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmDesc').textContent = desc;
+            confirmAction = callback;
+            document.getElementById('confirmModal').classList.remove('hidden');
+        }
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').classList.add('hidden');
+            confirmAction = null;
+        }
+        document.getElementById('confirmYesBtn').addEventListener('click', () => {
+            if (confirmAction) confirmAction();
+            closeConfirmModal();
+        });
+
+        function confirmDeleteRide(id) {
+            openConfirm('Delete Ride Entry?', 'This daily ride record will be permanently removed.', () => {
+                state.rides = state.rides.filter(r => r.id !== id);
+                persistState();
+                refreshDashboard();
+                notify('Ride entry deleted.');
+            });
+        }
+
+        function confirmDeleteBankTx(id) {
+            openConfirm('Remove Transaction Record?', 'Delete this transaction from history?', () => {
+                state.bankTxs = state.bankTxs.filter(t => t.id !== id);
+                persistState();
+                refreshDashboard();
+                notify('Transaction removed.');
+            });
+        }
+
+        function confirmClearDemo() {
+            openConfirm('Clear Sample Data & Start Fresh?', 'Wipe demo rides, sample bank transactions, and reset account balances to 0?', () => {
+                state.isDemo = false;
+                state.rides = [];
+                state.bankTxs = [];
+                state.accounts.acc1Balance = 0;
+                state.accounts.acc2Balance = 0;
+                persistState();
+                refreshDashboard();
+                notify('Cleared! Ready for your real numbers.');
+            });
+        }
+
+        function exportCSV() {
+            if (state.rides.length === 0) {
+                notify('No ride records to export yet!', 'error');
+                return;
+            }
+            const headers = ['Date', 'PickMe (Rs)', 'Uber Eats (Rs)', 'Gross Income (Rs)', 'KM', 'Mileage (km/L)', 'Petrol Price', 'Auto Fuel Cost (Rs)', 'Maintenance (Rs)', 'Kama Bima (Rs)', 'Extra (Rs)', 'Eda Labaya (Rs)', 'Note'];
+            const rows = state.rides.map(r => {
+                const inc = (Number(r.pickme) || 0) + (Number(r.uber) || 0);
+                const exp = (Number(r.fuelCost) || 0) + (Number(r.maint) || 0) + (Number(r.food) || 0) + (Number(r.extra) || 0);
+                return [
+                    r.date, r.pickme, r.uber, inc, r.km, r.mileage, r.petrolPrice, r.fuelCost, r.maint, r.food, r.extra, (inc - exp), `"${(r.note || '').replace(/"/g, '""')}"`
+                ];
+            });
+            const csv = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `KaviWealth_N160_Ledger_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+            notify('Excel (CSV) downloaded!');
+        }
+
+        function exportBackupJSON() {
+            const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `KaviWealth_Backup_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            notify('Full JSON backup saved!');
+        }
+
+        function importBackupJSON(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = ev => {
+                try {
+                    const parsed = JSON.parse(ev.target.result);
+                    if (parsed && Array.isArray(parsed.rides) && parsed.settings) {
+                        state = parsed;
+                        persistState();
+                        refreshDashboard();
+                        notify('Backup restored successfully!');
+                    } else {
+                        notify('Invalid backup file.', 'error');
+                    }
+                } catch (err) {
+                    notify('Could not read backup file.', 'error');
+                }
+            };
+            reader.readAsText(file);
+            e.target.value = '';
+        }
+
+        window.addEventListener('DOMContentLoaded', refreshDashboard);
+    </script>
+</body>
+</html>
