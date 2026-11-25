@@ -2,20 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#0b1020" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#090e1c" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="KaviWealth Pro" />
-  <title>KaviWealth Pro — Simple Ledger</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%2338bdf8'/%3E%3Cstop offset='100%25' stop-color='%2322c55e'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='%230d162c'/%3E%3Cpath d='M16 42c4-11 11-18 22-21' stroke='%2338bdf8' stroke-width='4' stroke-linecap='round' fill='none'/%3E%3Cpath d='M18 44l10-10 7 6 13-16' stroke='url(%23g)' stroke-width='4.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3Ccircle cx='48' cy='16' r='4' fill='%2322c55e'/%3E%3C/svg%3E" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%2338bdf8'/%3E%3Cstop offset='100%25' stop-color='%2322c55e'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='180' height='180' rx='40' fill='%230d162c'/%3E%3Cpath d='M42 120c12-32 32-52 64-60' stroke='%2338bdf8' stroke-width='11' stroke-linecap='round' fill='none'/%3E%3Cpath d='M48 124l28-28 20 17 38-46' stroke='url(%23g)' stroke-width='13' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3Ccircle cx='134' cy='46' r='11' fill='%2322c55e'/%3E%3C/svg%3E" />
+  <title>KaviWealth Pro</title>
   <style>
     :root {
-      --bg: #0b1020;
-      --card: #121a30;
-      --card-2: #18223e;
-      --border: rgba(255, 255, 255, 0.08);
-      --text: #f3f6fc;
-      --muted: #9aa7c2;
+      --bg: #090e1c;
+      --surface: #111930;
+      --surface-2: #172240;
+      --border: rgba(255, 255, 255, 0.09);
+      --text: #f4f7fd;
+      --muted: #99a7c4;
       --accent: #38bdf8;
       --green: #22c55e;
       --red: #ef4444;
@@ -23,64 +25,148 @@
       --radius: 16px;
     }
 
-    * {
+    *, *::before, *::after {
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
+      max-width: 100%;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      max-width: 100vw;
+      overflow-x: clip;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+      -webkit-text-size-adjust: 100%;
     }
 
     body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: linear-gradient(180deg, #090e1c 0%, var(--bg) 100%);
-      color: var(--text);
-      padding: calc(16px + env(safe-area-inset-top)) 16px calc(32px + env(safe-area-inset-bottom));
+      background: radial-gradient(circle at top, #132042 0%, var(--bg) 55%);
+      padding: calc(12px + env(safe-area-inset-top)) calc(12px + env(safe-area-inset-right)) calc(32px + env(safe-area-inset-bottom)) calc(12px + env(safe-area-inset-left));
     }
 
-    .container {
-      max-width: 920px;
+    .wrap {
+      width: 100%;
+      max-width: 1020px;
       margin: 0 auto;
+      overflow-x: clip;
     }
 
-    .topbar {
+    .header {
       display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
+      flex-direction: column;
       gap: 12px;
-      background: var(--card);
+      width: 100%;
+      background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 16px;
-      margin-bottom: 16px;
+      padding: 14px;
+      margin-bottom: 12px;
     }
 
-    .brand h1 {
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .logo-mark {
+      width: 46px;
+      height: 46px;
+      flex-shrink: 0;
+      border-radius: 14px;
+      background: linear-gradient(145deg, rgba(56, 189, 248, 0.16), rgba(34, 197, 94, 0.14));
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+    }
+
+    .brand-text {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .header h1 {
       margin: 0;
-      font-size: 1.35rem;
+      font-size: 1.24rem;
+      font-weight: 800;
       letter-spacing: -0.02em;
+      line-height: 1.15;
     }
 
-    .brand p {
+    .header p {
       margin: 3px 0 0;
       color: var(--muted);
-      font-size: 0.85rem;
+      font-size: 0.78rem;
+      line-height: 1.25;
     }
 
-    .controls {
+    .toolbar {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       gap: 8px;
+      width: 100%;
+    }
+
+    .seg {
+      display: inline-flex;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      padding: 3px;
+      flex-shrink: 0;
+    }
+
+    .seg button {
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      min-height: 36px;
+      padding: 6px 13px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.84rem;
+      cursor: pointer;
+    }
+
+    .seg button.active {
+      background: var(--accent);
+      color: #051122;
     }
 
     input, select, button {
       font-family: inherit;
-      font-size: 0.92rem;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      padding: 9px 12px;
+      font-size: 16px;
       color: var(--text);
-      background: var(--card-2);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      min-height: 44px;
+      padding: 10px 12px;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .toolbar input[type="date"],
+    .toolbar input[type="month"],
+    .toolbar button,
+    .toolbar label {
+      width: auto;
+      font-size: 0.84rem;
+      min-height: 36px;
+      padding: 6px 10px;
+      border-radius: 10px;
+    }
+
+    .toolbar input[type="date"],
+    .toolbar input[type="month"] {
+      max-width: 165px;
     }
 
     input:focus, select:focus {
@@ -90,8 +176,8 @@
 
     button {
       cursor: pointer;
-      font-weight: 600;
-      transition: transform 0.08s ease, opacity 0.15s ease;
+      font-weight: 700;
+      touch-action: manipulation;
     }
 
     button:active {
@@ -100,212 +186,415 @@
 
     .btn-primary {
       background: var(--accent);
-      color: #061224;
+      color: #051122;
       border: none;
     }
 
     .btn-green {
       background: var(--green);
-      color: #06210f;
+      color: #05210f;
       border: none;
     }
 
-    .btn-red {
+    .btn-soft {
+      background: var(--surface-2);
+      color: var(--text);
+    }
+
+    .btn-del {
+      width: auto;
+      background: rgba(239, 68, 68, 0.15);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      min-height: 34px;
+      padding: 5px 10px;
+      font-size: 0.76rem;
+      border-radius: 9px;
+    }
+
+    .page-tabs {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 12px;
+      width: 100%;
+    }
+
+    .page-tab {
+      min-height: 44px;
+      padding: 10px 10px;
+      border-radius: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .page-tab.active {
+      background: var(--accent);
+      color: #051122;
+      border-color: var(--accent);
+    }
+
+    .stats-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 10px;
+      width: 100%;
+    }
+
+    .exp-banner-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      margin-bottom: 12px;
+      width: 100%;
+    }
+
+    .target-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 12px;
+      width: 100%;
+    }
+
+    .acc-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 12px;
+      width: 100%;
+    }
+
+    @media (max-width: 860px) {
+      .stats-3, .target-grid { grid-template-columns: minmax(0, 1fr); }
+      .acc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 420px) {
+      .acc-grid { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    .card {
+      width: 100%;
+      min-width: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+
+    .profit-highlight {
+      border-color: rgba(34, 197, 94, 0.42);
+      background: linear-gradient(160deg, rgba(34, 197, 94, 0.12) 0%, var(--surface) 72%);
+    }
+
+    .exp-highlight {
+      border-color: rgba(239, 68, 68, 0.35);
+      background: linear-gradient(160deg, rgba(239, 68, 68, 0.1) 0%, var(--surface) 72%);
+    }
+
+    .label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+    }
+
+    .val {
+      font-size: 1.32rem;
+      font-weight: 800;
+      margin-top: 5px;
+      overflow-wrap: anywhere;
+    }
+
+    .sub {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 5px;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+    }
+
+    .pos { color: var(--green); }
+    .neg { color: var(--red); }
+    .acc-col { color: var(--accent); }
+    .cash-col { color: var(--amber); }
+
+    .progress-track {
+      width: 100%;
+      height: 10px;
+      background: var(--surface-2);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 10px;
+      border: 1px solid var(--border);
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--accent);
+      border-radius: 999px;
+      transition: width 0.25s ease;
+    }
+
+    .status-badge {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .badge-good {
+      background: rgba(34, 197, 94, 0.16);
+      color: #86efac;
+      border: 1px solid rgba(34, 197, 94, 0.35);
+    }
+
+    .badge-warn {
+      background: rgba(245, 158, 11, 0.16);
+      color: #fcd34d;
+      border: 1px solid rgba(245, 158, 11, 0.35);
+    }
+
+    .badge-high {
       background: rgba(239, 68, 68, 0.16);
       color: #fca5a5;
       border: 1px solid rgba(239, 68, 68, 0.35);
     }
 
-    .btn-ghost {
-      background: transparent;
-      color: var(--muted);
-    }
-
-    .grid-4 {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-
-    .grid-3 {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-      margin-bottom: 16px;
-    }
-
-    @media (max-width: 780px) {
-      .grid-4 { grid-template-columns: repeat(2, 1fr); }
-      .grid-3, .grid-2 { grid-template-columns: 1fr; }
-    }
-
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 16px;
-    }
-
-    .stat-label {
-      font-size: 0.78rem;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    .stat-value {
-      font-size: 1.4rem;
-      font-weight: 700;
-      margin-top: 6px;
-    }
-
-    .stat-sub {
-      font-size: 0.8rem;
-      color: var(--muted);
-      margin-top: 6px;
-    }
-
-    .pos { color: var(--green); }
-    .neg { color: var(--red); }
-
-    .card-title {
-      margin: 0 0 12px;
-      font-size: 1rem;
+    .card-head {
       display: flex;
       justify-content: space-between;
       align-items: center;
-    }
-
-    .account-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      margin-bottom: 12px;
       gap: 8px;
-      margin-top: 8px;
-    }
-
-    .account-amount {
-      font-size: 1.25rem;
-      font-weight: 700;
-    }
-
-    .cat-pills {
-      display: flex;
       flex-wrap: wrap;
+    }
+
+    .card-head h2 {
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    .acc-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
       gap: 8px;
-      margin: 10px 0 12px;
+      flex-wrap: wrap;
     }
 
-    .cat-pill {
-      padding: 7px 12px;
-      border-radius: 999px;
-      background: var(--card-2);
+    .acc-num {
+      font-size: 1.15rem;
+      font-weight: 800;
+    }
+
+    .acc-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .acc-actions button {
+      width: auto;
+      min-height: 36px;
+      padding: 6px 10px;
+      font-size: 0.78rem;
+      border-radius: 9px;
+    }
+
+    .fuel-bar {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      align-items: end;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 720px) {
+      .fuel-bar { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    .fuel-rate-box {
+      background: var(--surface-2);
       border: 1px solid var(--border);
-      font-size: 0.84rem;
+      border-radius: 12px;
+      padding: 10px 12px;
+      min-height: 44px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    .cat-pill.active {
-      background: var(--accent);
-      color: #061224;
-      border-color: var(--accent);
-    }
-
-    .form-stack {
+    .stack {
       display: flex;
       flex-direction: column;
       gap: 10px;
+      width: 100%;
     }
 
-    .form-row {
-      display: flex;
+    .row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
+      width: 100%;
     }
 
-    .form-row > * {
-      flex: 1;
+    @media (max-width: 600px) {
+      .row { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
       min-width: 0;
     }
 
-    .breakdown-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 10px;
-    }
-
-    .breakdown-item {
-      background: var(--card-2);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 12px;
-    }
-
-    .breakdown-item .name {
-      font-size: 0.82rem;
+    .field-group label {
+      font-size: 0.75rem;
       color: var(--muted);
     }
 
-    .breakdown-item .val {
+    .cat-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .cat-btn {
+      width: auto;
+      border-radius: 999px;
+      min-height: 38px;
+      padding: 7px 13px;
+      font-size: 0.84rem;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .cat-btn.active {
+      background: var(--accent);
+      color: #051122;
+      border-color: var(--accent);
+    }
+
+    .cat-btn.monthly-pill {
+      background: rgba(239, 68, 68, 0.14);
+      border: 1px solid rgba(239, 68, 68, 0.55);
+      color: #fca5a5;
+    }
+
+    .cat-btn.monthly-pill.active {
+      background: var(--red);
+      color: #ffffff;
+      border-color: var(--red);
+    }
+
+    .hint-note {
+      font-size: 0.8rem;
+      color: var(--amber);
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      border-radius: 10px;
+      padding: 9px 11px;
+      line-height: 1.35;
+    }
+
+    .cat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+      gap: 10px;
+      width: 100%;
+    }
+
+    .cat-box {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      min-width: 0;
+    }
+
+    .cat-box .c-name {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .cat-box .c-amt {
       font-size: 1.05rem;
       font-weight: 700;
       margin-top: 4px;
     }
 
-    .tx-list {
+    .entries {
       display: flex;
       flex-direction: column;
       gap: 8px;
-      margin-top: 10px;
+      width: 100%;
     }
 
-    .tx-item {
+    .entry {
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 10px;
-      background: var(--card-2);
+      background: var(--surface-2);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 10px 12px;
+      padding: 11px 12px;
+      min-width: 0;
     }
 
-    .tx-title {
-      font-weight: 600;
-      font-size: 0.92rem;
+    .entry > div:first-child {
+      min-width: 0;
+      flex: 1;
     }
 
-    .tx-meta {
-      font-size: 0.78rem;
+    .entry-title {
+      font-weight: 700;
+      font-size: 0.9rem;
+      overflow-wrap: anywhere;
+    }
+
+    .entry-meta {
+      font-size: 0.76rem;
       color: var(--muted);
       margin-top: 2px;
+      line-height: 1.3;
+      overflow-wrap: anywhere;
     }
 
-    .tx-right {
+    .entry-right {
       display: flex;
       align-items: center;
-      gap: 10px;
-      white-space: nowrap;
+      gap: 8px;
+      flex-shrink: 0;
     }
 
-    .badge {
+    .pill {
       font-size: 0.74rem;
-      padding: 3px 8px;
+      padding: 4px 9px;
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.06);
+      background: rgba(255, 255, 255, 0.07);
       color: var(--muted);
     }
 
     .empty {
       color: var(--muted);
       font-size: 0.88rem;
-      padding: 10px 0;
+      padding: 8px 0;
     }
 
     .hidden {
@@ -314,467 +603,946 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- Top Bar -->
-    <div class="topbar">
-      <div class="brand">
-        <h1>KaviWealth Pro</h1>
-        <p>Monthly Money &amp; Ride KM</p>
+  <div class="wrap">
+    <!-- Top Header with Custom Logo -->
+    <div class="header">
+      <div class="brand-row">
+        <div class="logo-mark" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 64 64" fill="none">
+            <path d="M14 44c5-13 13-21 26-24" stroke="#38bdf8" stroke-width="4.5" stroke-linecap="round" />
+            <path d="M16 46l11-11 8 7 15-18" stroke="#22c55e" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+            <circle cx="50" cy="14" r="4.5" fill="#22c55e" />
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>KaviWealth Pro</h1>
+          <p>Ride Profit, KM, Target &amp; Smart Expenses</p>
+        </div>
       </div>
-      <div class="controls">
-        <input type="month" id="monthPicker" aria-label="Select Month" />
-        <button class="btn-ghost" id="exportBtn" type="button">Backup JSON</button>
-        <label class="btn-ghost" style="cursor:pointer; padding:9px 12px; border:1px solid var(--border); border-radius:10px;">
+
+      <div class="toolbar">
+        <div class="seg" role="tablist" aria-label="Time Period">
+          <button type="button" id="btnDaily" class="active">Daily</button>
+          <button type="button" id="btnMonthly">Monthly</button>
+        </div>
+
+        <input type="date" id="datePicker" aria-label="Select Date" />
+        <input type="month" id="monthPicker" class="hidden" aria-label="Select Month" />
+
+        <button type="button" class="btn-soft" id="exportBtn">Backup</button>
+        <label class="btn-soft" style="cursor:pointer; display:inline-flex; align-items:center; border:1px solid var(--border); font-weight:700;">
           Restore
           <input type="file" id="importInput" accept=".json" class="hidden" />
         </label>
       </div>
     </div>
 
-    <!-- Main Summary Cards -->
-    <div class="grid-4">
+    <!-- Main Page Tabs -->
+    <div class="page-tabs" role="tablist">
+      <button type="button" class="page-tab active" id="tabLedger">Ride Ledger &amp; Target</button>
+      <button type="button" class="page-tab" id="tabExpenses">Expenses Tab</button>
+    </div>
+
+    <!-- 3 Core Ride Cards -->
+    <div class="stats-3">
       <div class="card">
-        <div class="stat-label">Monthly Income</div>
-        <div class="stat-value pos" id="monthlyIncomeVal">Rs. 0</div>
-        <div class="stat-sub" id="incomeCountSub">0 entries</div>
+        <div class="label" id="incomeLabel">Daily Income</div>
+        <div class="val pos" id="incomeVal">Rs. 0</div>
+        <div class="sub" id="incomeSplitSub">Uber: Rs. 0 · PickMe: Rs. 0</div>
+      </div>
+
+      <div class="card profit-highlight">
+        <div class="label" id="rideProfitLabel">Ride Net Profit</div>
+        <div class="val pos" id="rideProfitVal">Rs. 0</div>
+        <div class="sub" id="rideProfitSub">Rides Rs. 0 − Used Fuel Rs. 0</div>
       </div>
 
       <div class="card">
-        <div class="stat-label">Monthly Expense</div>
-        <div class="stat-value neg" id="monthlyExpenseVal">Rs. 0</div>
-        <div class="stat-sub" id="expenseCountSub">0 entries</div>
-      </div>
-
-      <div class="card">
-        <div class="stat-label">Net Balance (Month)</div>
-        <div class="stat-value" id="netBalanceVal">Rs. 0</div>
-        <div class="stat-sub">Income − Expense</div>
-      </div>
-
-      <div class="card">
-        <div class="stat-label">Uber + PickMe KM</div>
-        <div class="stat-value" style="color:var(--accent)" id="totalKmVal">0 km</div>
-        <div class="stat-sub" id="kmBreakdownSub">Uber: 0 km · PickMe: 0 km</div>
+        <div class="label" id="kmLabel">Total Ride KM</div>
+        <div class="val acc-col" id="kmTotalVal">0 km</div>
+        <div class="sub" id="usedFuelKmSub">Used fuel cost: Rs. 0</div>
       </div>
     </div>
 
-    <!-- Bank Accounts & Unit Trust -->
-    <div class="grid-3">
-      <div class="card">
-        <div class="stat-label">Bank Account 1</div>
-        <div class="account-row">
-          <div class="account-amount" id="acc1Val">Rs. 0</div>
-          <button class="btn-ghost" type="button" onclick="editBalance('acc1', 'Bank Account 1')">Edit</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="stat-label">Bank Account 2</div>
-        <div class="account-row">
-          <div class="account-amount" id="acc2Val">Rs. 0</div>
-          <button class="btn-ghost" type="button" onclick="editBalance('acc2', 'Bank Account 2')">Edit</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="stat-label">Unit Trust</div>
-        <div class="account-row">
-          <div class="account-amount" id="utVal">Rs. 0</div>
-          <button class="btn-ghost" type="button" onclick="editBalance('ut', 'Unit Trust')">Edit</button>
+    <!-- Separate Daily / Monthly Expense Card -->
+    <div class="exp-banner-grid">
+      <div class="card exp-highlight">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+          <div>
+            <div class="label" id="separateExpenseLabel">Daily Expense</div>
+            <div class="val neg" id="separateExpenseVal">Rs. 0</div>
+            <div class="sub" id="separateExpenseSub">Monthly reserve: ~Rs. 0/day · ATM fees: Rs. 0</div>
+          </div>
+          <button type="button" class="btn-soft" style="width:auto; min-height:38px; padding:8px 12px; font-size:0.82rem;" onclick="setActiveTab('expenses')">
+            Open Expenses Tab →
+          </button>
         </div>
       </div>
     </div>
 
-    <!-- Quick Add Forms -->
-    <div class="grid-2">
-      <!-- Add Expense -->
+    <!-- Monthly Target & Spending/Savings Check Cards -->
+    <div class="target-grid">
       <div class="card">
-        <h2 class="card-title">Add Expense</h2>
-        <form id="expenseForm" class="form-stack">
-          <div class="cat-pills" id="categoryPills"></div>
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+          <div class="label">Monthly Income Target &amp; Progress</div>
+          <button type="button" class="btn-soft" style="width:auto; min-height:32px; padding:4px 9px; font-size:0.75rem; border-radius:8px;" onclick="setMonthlyGoals()">Set Targets</button>
+        </div>
+        <div class="val acc-col" id="targetProgressText">0%</div>
+        <div class="sub" id="targetDetailSub">Rs. 0 / Rs. 0 target</div>
+        <div class="progress-track">
+          <div class="progress-fill" id="targetProgressBar"></div>
+        </div>
+      </div>
 
-          <div id="customCatWrap" class="hidden">
-            <input type="text" id="customCategoryInput" placeholder="Custom category name (e.g., Boarding, Food)" style="width:100%" />
+      <div class="card">
+        <div class="label">Spending &amp; Savings Check (Month)</div>
+        <div class="val" id="monthSavedVal">Rs. 0</div>
+        <div class="sub" id="monthSpendVsLimitSub">Monthly Spent: Rs. 0 / Limit: Rs. 0</div>
+        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+          <span class="status-badge badge-good" id="spendStatusBadge">Spending: Normal</span>
+          <span class="status-badge badge-good" id="saveStatusBadge">Savings: Checking</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 1: RIDE LEDGER & ACCOUNTS ==================== -->
+    <div id="sectionLedger">
+      <div class="card fuel-bar">
+        <div class="field-group">
+          <label for="petrolPriceInput">Petrol Price (Rs. per Litre)</label>
+          <input type="number" id="petrolPriceInput" inputmode="decimal" placeholder="e.g., 424" min="0" step="any" />
+        </div>
+        <div class="field-group">
+          <label for="bikeMileageInput">Bike Mileage (KM per Litre)</label>
+          <input type="number" id="bikeMileageInput" inputmode="decimal" placeholder="e.g., 45" min="0.1" step="any" />
+        </div>
+        <div class="fuel-rate-box">
+          <span class="label">Cost / KM</span>
+          <strong class="acc-col" id="costPerKmDisplay">Rs. 0.00 / km</strong>
+        </div>
+      </div>
+
+      <div class="acc-grid">
+        <div class="card">
+          <div class="label">Spending / Bank 1</div>
+          <div class="acc-line">
+            <div class="acc-num" id="acc1Val">Rs. 0</div>
+            <div class="acc-actions">
+              <button type="button" class="btn-green" onclick="addDeposit('acc1', 'Spending / Bank 1')">+ Deposit</button>
+              <button type="button" class="btn-soft" onclick="editBalance('acc1', 'Spending / Bank 1')">Edit</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="label">Savings / Bank 2</div>
+          <div class="acc-line">
+            <div class="acc-num" id="acc2Val">Rs. 0</div>
+            <div class="acc-actions">
+              <button type="button" class="btn-green" onclick="addDeposit('acc2', 'Savings / Bank 2')">+ Deposit</button>
+              <button type="button" class="btn-soft" onclick="editBalance('acc2', 'Savings / Bank 2')">Edit</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="label">Cash / Wallet</div>
+          <div class="acc-line">
+            <div class="acc-num cash-col" id="cashVal">Rs. 0</div>
+            <div class="acc-actions">
+              <button type="button" class="btn-soft" onclick="editBalance('cash', 'Cash / Wallet')">Edit</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="label">Unit Trust</div>
+          <div class="acc-line">
+            <div class="acc-num" id="utVal">Rs. 0</div>
+            <div class="acc-actions">
+              <button type="button" class="btn-green" onclick="addDeposit('ut', 'Unit Trust')">+ Deposit</button>
+              <button type="button" class="btn-soft" onclick="editBalance('ut', 'Unit Trust')">Edit</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:12px;">
+        <div class="card-head">
+          <h2>Add Ride Income &amp; Total KM</h2>
+          <span class="pill">Uber &amp; PickMe Separate</span>
+        </div>
+
+        <form id="incomeForm" class="stack">
+          <div class="row">
+            <div class="field-group">
+              <label for="uberAmount">Uber Income (Rs.)</label>
+              <input type="number" id="uberAmount" inputmode="decimal" placeholder="e.g., 4000" min="0" step="any" />
+            </div>
+            <div class="field-group">
+              <label for="pickmeAmount">PickMe Income (Rs.)</label>
+              <input type="number" id="pickmeAmount" inputmode="decimal" placeholder="e.g., 5000" min="0" step="any" />
+            </div>
           </div>
 
-          <div class="form-row">
-            <input type="number" id="expenseAmount" placeholder="Amount (Rs.)" min="0" step="any" required />
-            <select id="expenseAccount" aria-label="Expense Account">
+          <div class="row">
+            <div class="field-group">
+              <label for="incKm">Total Ride KM (Uber + PickMe)</label>
+              <input type="number" id="incKm" inputmode="decimal" placeholder="e.g., 150" min="0" step="any" />
+            </div>
+            <div class="field-group">
+              <label for="otherAmount">Other Income (Rs. — Optional)</label>
+              <input type="number" id="otherAmount" inputmode="decimal" placeholder="0" min="0" step="any" />
+            </div>
+          </div>
+
+          <div class="row">
+            <input type="date" id="incDate" aria-label="Income Date" required />
+            <select id="incAccount" aria-label="Deposit To">
               <option value="">No Balance Change</option>
-              <option value="acc1">Bank Account 1</option>
-              <option value="acc2">Bank Account 2</option>
+              <option value="acc1">Spending / Bank 1</option>
+              <option value="acc2">Savings / Bank 2</option>
+              <option value="cash">Cash / Wallet</option>
               <option value="ut">Unit Trust</option>
             </select>
           </div>
 
-          <input type="text" id="expenseNote" placeholder="Note (optional — e.g., Oil change, Petrol, Day out)" />
+          <input type="text" id="incNote" placeholder="Note (optional)" />
 
-          <button type="submit" class="btn-primary">Save Expense</button>
+          <button type="submit" class="btn-green">Save Income &amp; KM</button>
         </form>
       </div>
 
-      <!-- Add Income & Ride KM -->
       <div class="card">
-        <h2 class="card-title">Add Income &amp; Ride KM</h2>
-        <form id="incomeForm" class="form-stack">
-          <div class="form-row">
-            <select id="incomeSource" aria-label="Income Source">
-              <option value="Uber">Uber</option>
-              <option value="PickMe">PickMe</option>
-              <option value="Other">Other</option>
-            </select>
-            <input type="number" id="incomeAmount" placeholder="Amount (Rs.)" min="0" step="any" required />
-          </div>
-
-          <div class="form-row">
-            <input type="number" id="incomeKm" placeholder="KM Driven (e.g., 25)" min="0" step="any" />
-            <select id="incomeAccount" aria-label="Deposit To">
-              <option value="">No Balance Change</option>
-              <option value="acc1">Bank Account 1</option>
-              <option value="acc2">Bank Account 2</option>
-              <option value="ut">Unit Trust</option>
-            </select>
-          </div>
-
-          <input type="text" id="incomeNote" placeholder="Note (optional — e.g., Morning shift, Flash ride)" />
-
-          <button type="submit" class="btn-green">Save Income</button>
-        </form>
+        <div class="card-head">
+          <h2 id="ledgerListTitle">Ride &amp; Deposit Entries</h2>
+          <span class="pill" id="ledgerListCount">0 items</span>
+        </div>
+        <div class="entries" id="ledgerEntriesList"></div>
       </div>
     </div>
 
-    <!-- Expense Category Breakdown -->
-    <div class="card" style="margin-bottom:16px;">
-      <h2 class="card-title">Expense Breakdown (Selected Month)</h2>
-      <div class="breakdown-list" id="categoryBreakdown"></div>
-    </div>
+    <!-- ==================== TAB 2: SEPARATE EXPENSES ==================== -->
+    <div id="sectionExpenses" class="hidden">
+      <div class="card" style="margin-bottom:12px;">
+        <div class="card-head">
+          <h2>Add Expense / ATM Cash</h2>
+          <span class="pill" id="expEntryDateLabel">Today</span>
+        </div>
 
-    <!-- Recent Entries -->
-    <div class="card">
-      <h2 class="card-title">
-        <span>Entries (Selected Month)</span>
-        <span class="badge" id="entryTotalBadge">0 items</span>
-      </h2>
-      <div class="tx-list" id="entriesList"></div>
+        <form id="expenseForm" class="stack">
+          <div class="cat-bar" id="catBar"></div>
+
+          <div id="atmHint" class="hint-note hidden">
+            ATM Withdrawal auto-deducts <strong>Rs. 25 ATM fee</strong> from the bank account (Total deducted = Amount + Rs. 25), adds Amount to <strong>Cash / Wallet</strong>, and records Rs. 25 as ATM Fee.
+          </div>
+
+          <div id="periodicHint" class="hint-note hidden">
+            <strong>Monthly Expense</strong> items count in <strong>Monthly Expense</strong> without spiking today's single-day spend, and show a daily reserve (~Amount ÷ 30).
+          </div>
+
+          <div id="customCatBox" class="hidden">
+            <input type="text" id="customCatInput" placeholder="New category name" />
+          </div>
+
+          <div class="row">
+            <input type="number" id="expAmount" inputmode="decimal" placeholder="Amount (Rs.)" min="0" step="any" required />
+            <select id="expFrequency" aria-label="Expense Type">
+              <option value="daily">Daily Expense</option>
+              <option value="periodic">Monthly Expense</option>
+            </select>
+          </div>
+
+          <div class="row">
+            <input type="date" id="expDate" aria-label="Expense Date" required />
+            <select id="expAccount" aria-label="Account">
+              <option value="cash">Cash / Wallet</option>
+              <option value="acc1">Spending / Bank 1</option>
+              <option value="acc2">Savings / Bank 2</option>
+              <option value="ut">Unit Trust</option>
+              <option value="">No Balance Change</option>
+            </select>
+          </div>
+
+          <input type="text" id="expNote" placeholder="Note (e.g., Lunch, Boarding fee, Service)" />
+
+          <button type="submit" class="btn-primary" id="saveExpBtn">Save Expense</button>
+        </form>
+      </div>
+
+      <div class="card" style="margin-bottom:12px;">
+        <div class="card-head">
+          <h2 id="breakdownTitle">Expense Breakdown</h2>
+          <span class="pill" id="totalExpBadge">Spent: Rs. 0</span>
+        </div>
+        <div class="cat-grid" id="catBreakdown"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2 id="expListTitle">Expense Entries</h2>
+          <span class="pill" id="expListCount">0 items</span>
+        </div>
+        <div class="entries" id="expenseEntriesList"></div>
+      </div>
     </div>
   </div>
 
   <script>
-    const STORAGE_KEY = "kaviwealth_pro_simple_v1";
-    const DEFAULT_CATEGORIES = ["Service", "Petrol", "Item", "Day Out", "+ Custom"];
+    const STORAGE_KEY = "kaviwealth_pro_v12";
+    const ATM_FEE = 25;
+    const BASE_CATS = [
+      "Food",
+      "ATM Withdrawal",
+      "Petrol",
+      "Item",
+      "Day Out",
+      "Other",
+      "Service",
+      "Boarding",
+    ];
+    const MONTHLY_CATS = new Set(["Service", "Boarding"]);
 
-    function getCurrentMonthStr() {
-      const now = new Date();
-      const y = now.getFullYear();
-      const m = String(now.getMonth() + 1).padStart(2, "0");
-      return `${y}-${m}`;
+    function todayStr() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
     }
 
-    function loadState() {
+    function monthFromDate(dStr) {
+      return (dStr || todayStr()).slice(0, 7);
+    }
+
+    function loadData() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (raw) {
           const parsed = JSON.parse(raw);
           return {
+            fuel: {
+              petrolPrice: Number(parsed.fuel?.petrolPrice) || 0,
+              mileageKmPerL: Number(parsed.fuel?.mileageKmPerL) || 0,
+            },
+            goals: {
+              incomeTarget: Number(parsed.goals?.incomeTarget) || 0,
+              expenseLimit: Number(parsed.goals?.expenseLimit) || 0,
+              savingsTarget: Number(parsed.goals?.savingsTarget) || 0,
+            },
             balances: {
               acc1: Number(parsed.balances?.acc1) || 0,
               acc2: Number(parsed.balances?.acc2) || 0,
+              cash: Number(parsed.balances?.cash) || 0,
               ut: Number(parsed.balances?.ut) || 0,
             },
-            customCategories: Array.isArray(parsed.customCategories) ? parsed.customCategories : [],
+            customCats: Array.isArray(parsed.customCats) ? parsed.customCats : [],
             entries: Array.isArray(parsed.entries) ? parsed.entries : [],
           };
         }
-      } catch (e) {
-        console.error("Failed to load state", e);
+      } catch (err) {
+        console.error(err);
       }
       return {
-        balances: { acc1: 0, acc2: 0, ut: 0 },
-        customCategories: [],
+        fuel: { petrolPrice: 0, mileageKmPerL: 0 },
+        goals: { incomeTarget: 150000, expenseLimit: 50000, savingsTarget: 50000 },
+        balances: { acc1: 0, acc2: 0, cash: 0, ut: 0 },
+        customCats: [],
         entries: [],
       };
     }
 
-    let state = loadState();
-    let selectedCategory = "Service";
+    let data = loadData();
+    let mode = "daily";
+    let activeTab = "ledger";
+    let activeCat = BASE_CATS[0];
 
+    const tStr = todayStr();
+    const datePicker = document.getElementById("datePicker");
     const monthPicker = document.getElementById("monthPicker");
-    monthPicker.value = getCurrentMonthStr();
+    const expDate = document.getElementById("expDate");
+    const incDate = document.getElementById("incDate");
+    const expAccountSelect = document.getElementById("expAccount");
+    const expFreqSelect = document.getElementById("expFrequency");
+    const petrolPriceInput = document.getElementById("petrolPriceInput");
+    const bikeMileageInput = document.getElementById("bikeMileageInput");
 
-    function saveState() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    datePicker.value = tStr;
+    monthPicker.value = monthFromDate(tStr);
+    expDate.value = tStr;
+    incDate.value = tStr;
+    petrolPriceInput.value = data.fuel.petrolPrice || "";
+    bikeMileageInput.value = data.fuel.mileageKmPerL || "";
+
+    function persist() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     }
 
-    function formatRs(num) {
-      const n = Number(num) || 0;
-      const sign = n < 0 ? "-" : "";
-      return `${sign}Rs. ${Math.abs(n).toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
+    function fmtRs(n, decimals = 2) {
+      const num = Number(n) || 0;
+      const sign = num < 0 ? "-" : "";
+      return `${sign}Rs. ${Math.abs(num).toLocaleString("en-US", { maximumFractionDigits: decimals })}`;
     }
 
-    function formatKm(num) {
-      const n = Number(num) || 0;
-      return `${n.toLocaleString("en-US", { maximumFractionDigits: 1 })} km`;
+    function fmtKm(n) {
+      const num = Number(n) || 0;
+      return `${num.toLocaleString("en-US", { maximumFractionDigits: 1 })} km`;
     }
 
-    function renderCategoryPills() {
-      const wrap = document.getElementById("categoryPills");
-      const allCats = [
-        "Service",
-        "Petrol",
-        "Item",
-        "Day Out",
-        ...state.customCategories,
-        "+ Custom",
-      ];
-      const uniqueCats = [...new Set(allCats)];
-
-      wrap.innerHTML = "";
-      uniqueCats.forEach((cat) => {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = `cat-pill ${selectedCategory === cat ? "active" : ""}`;
-        btn.textContent = cat;
-        btn.onclick = () => {
-          selectedCategory = cat;
-          document.getElementById("customCatWrap").classList.toggle("hidden", cat !== "+ Custom");
-          renderCategoryPills();
-        };
-        wrap.appendChild(btn);
-      });
-    }
-
-    function editBalance(key, label) {
-      const current = state.balances[key] || 0;
-      const input = prompt(`Enter new balance for ${label} (Rs.):`, current);
-      if (input === null) return;
-      const val = parseFloat(input);
-      if (Number.isNaN(val)) {
-        alert("Please enter a valid number.");
-        return;
-      }
-      state.balances[key] = val;
-      saveState();
-      render();
-    }
-
-    function deleteEntry(id) {
-      const idx = state.entries.findIndex((e) => e.id === id);
-      if (idx === -1) return;
-      const item = state.entries[idx];
-
-      // Reverse balance impact if an account was linked
-      if (item.account && state.balances.hasOwnProperty(item.account)) {
-        if (item.type === "expense") {
-          state.balances[item.account] += Number(item.amount) || 0;
-        } else if (item.type === "income") {
-          state.balances[item.account] -= Number(item.amount) || 0;
-        }
-      }
-
-      state.entries.splice(idx, 1);
-      saveState();
-      render();
-    }
-
-    document.getElementById("expenseForm").addEventListener("submit", (e) => {
-      e.preventDefault();
-      let category = selectedCategory;
-      if (category === "+ Custom") {
-        const customName = document.getElementById("customCategoryInput").value.trim();
-        if (!customName) {
-          alert("Please enter a custom category name.");
-          return;
-        }
-        category = customName;
-        if (!DEFAULT_CATEGORIES.includes(category) && !state.customCategories.includes(category)) {
-          state.customCategories.push(category);
-        }
-      }
-
-      const amount = parseFloat(document.getElementById("expenseAmount").value);
-      const account = document.getElementById("expenseAccount").value;
-      const note = document.getElementById("expenseNote").value.trim();
-
-      if (Number.isNaN(amount) || amount < 0) {
-        alert("Enter a valid amount.");
-        return;
-      }
-
-      const monthStr = monthPicker.value || getCurrentMonthStr();
-      const entry = {
-        id: Date.now().toString() + Math.random().toString(36).slice(2, 6),
-        type: "expense",
-        month: monthStr,
-        category,
-        amount,
-        account: account || null,
-        note,
-        createdAt: new Date().toISOString(),
-      };
-
-      if (account && state.balances.hasOwnProperty(account)) {
-        state.balances[account] -= amount;
-      }
-
-      state.entries.unshift(entry);
-      saveState();
-
-      document.getElementById("expenseAmount").value = "";
-      document.getElementById("expenseNote").value = "";
-      document.getElementById("customCategoryInput").value = "";
-      renderCategoryPills();
-      render();
-    });
-
-    document.getElementById("incomeForm").addEventListener("submit", (e) => {
-      e.preventDefault();
-      const source = document.getElementById("incomeSource").value;
-      const amount = parseFloat(document.getElementById("incomeAmount").value);
-      const kmRaw = parseFloat(document.getElementById("incomeKm").value);
-      const km = Number.isNaN(kmRaw) || kmRaw < 0 ? 0 : kmRaw;
-      const account = document.getElementById("incomeAccount").value;
-      const note = document.getElementById("incomeNote").value.trim();
-
-      if (Number.isNaN(amount) || amount < 0) {
-        alert("Enter a valid amount.");
-        return;
-      }
-
-      const monthStr = monthPicker.value || getCurrentMonthStr();
-      const entry = {
-        id: Date.now().toString() + Math.random().toString(36).slice(2, 6),
-        type: "income",
-        month: monthStr,
-        source,
-        amount,
-        km,
-        account: account || null,
-        note,
-        createdAt: new Date().toISOString(),
-      };
-
-      if (account && state.balances.hasOwnProperty(account)) {
-        state.balances[account] += amount;
-      }
-
-      state.entries.unshift(entry);
-      saveState();
-
-      document.getElementById("incomeAmount").value = "";
-      document.getElementById("incomeKm").value = "";
-      document.getElementById("incomeNote").value = "";
-      render();
-    });
-
-    function render() {
-      const monthStr = monthPicker.value || getCurrentMonthStr();
-      const monthEntries = state.entries.filter((e) => e.month === monthStr);
-
-      const incomes = monthEntries.filter((e) => e.type === "income");
-      const expenses = monthEntries.filter((e) => e.type === "expense");
-
-      const totalIncome = incomes.reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
-      const totalExpense = expenses.reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
-      const netBalance = totalIncome - totalExpense;
-
-      const uberKm = incomes
-        .filter((e) => e.source === "Uber")
-        .reduce((sum, e) => sum + (Number(e.km) || 0), 0);
-      const pickmeKm = incomes
-        .filter((e) => e.source === "PickMe")
-        .reduce((sum, e) => sum + (Number(e.km) || 0), 0);
-      const totalKm = uberKm + pickmeKm;
-
-      document.getElementById("monthlyIncomeVal").textContent = formatRs(totalIncome);
-      document.getElementById("incomeCountSub").textContent = `${incomes.length} entries`;
-
-      document.getElementById("monthlyExpenseVal").textContent = formatRs(totalExpense);
-      document.getElementById("expenseCountSub").textContent = `${expenses.length} entries`;
-
-      const netEl = document.getElementById("netBalanceVal");
-      netEl.textContent = formatRs(netBalance);
-      netEl.className = `stat-value ${netBalance >= 0 ? "pos" : "neg"}`;
-
-      document.getElementById("totalKmVal").textContent = formatKm(totalKm);
-      document.getElementById("kmBreakdownSub").textContent =
-        `Uber: ${formatKm(uberKm)} · PickMe: ${formatKm(pickmeKm)}`;
-
-      document.getElementById("acc1Val").textContent = formatRs(state.balances.acc1);
-      document.getElementById("acc2Val").textContent = formatRs(state.balances.acc2);
-      document.getElementById("utVal").textContent = formatRs(state.balances.ut);
-
-      // Category breakdown
-      const catTotals = {};
-      ["Service", "Petrol", "Item", "Day Out", ...state.customCategories].forEach((c) => {
-        catTotals[c] = 0;
-      });
-      expenses.forEach((e) => {
-        catTotals[e.category] = (catTotals[e.category] || 0) + (Number(e.amount) || 0);
-      });
-
-      const breakdownEl = document.getElementById("categoryBreakdown");
-      breakdownEl.innerHTML = "";
-      Object.entries(catTotals).forEach(([cat, val]) => {
-        const box = document.createElement("div");
-        box.className = "breakdown-item";
-        box.innerHTML = `<div class="name">${escapeHtml(cat)}</div><div class="val">${formatRs(val)}</div>`;
-        breakdownEl.appendChild(box);
-      });
-
-      // Entries list
-      const listEl = document.getElementById("entriesList");
-      document.getElementById("entryTotalBadge").textContent = `${monthEntries.length} items`;
-
-      if (monthEntries.length === 0) {
-        listEl.innerHTML = `<div class="empty">No entries recorded for ${monthStr}.</div>`;
-        return;
-      }
-
-      listEl.innerHTML = "";
-      monthEntries.forEach((item) => {
-        const row = document.createElement("div");
-        row.className = "tx-item";
-
-        const isIncome = item.type === "income";
-        const mainTitle = isIncome
-          ? `${item.source} Income${item.km ? ` (${formatKm(item.km)})` : ""}`
-          : item.category;
-
-        const metaParts = [];
-        if (item.note) metaParts.push(item.note);
-        if (item.account) {
-          const accNames = { acc1: "Bank Account 1", acc2: "Bank Account 2", ut: "Unit Trust" };
-          metaParts.push(accNames[item.account] || item.account);
-        }
-
-        row.innerHTML = `
-          <div>
-            <div class="tx-title">${escapeHtml(mainTitle)}</div>
-            <div class="tx-meta">${escapeHtml(metaParts.join(" · ") || item.month)}</div>
-          </div>
-          <div class="tx-right">
-            <strong class="${isIncome ? "pos" : "neg"}">${isIncome ? "+" : "-"}${formatRs(item.amount)}</strong>
-            <button type="button" class="btn-red" style="padding:5px 9px; font-size:0.78rem;" onclick="deleteEntry('${item.id}')">Delete</button>
-          </div>
-        `;
-        listEl.appendChild(row);
-      });
-    }
-
-    function escapeHtml(str) {
-      return String(str)
+    function esc(s) {
+      return String(s)
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;");
     }
 
+    function orderedExpenseCats() {
+      const extras = data.customCats.filter((c) => !BASE_CATS.includes(c));
+      return [...BASE_CATS, ...extras];
+    }
+
+    function getCostPerKm() {
+      const price = Number(data.fuel.petrolPrice) || 0;
+      const mileage = Number(data.fuel.mileageKmPerL) || 0;
+      if (price <= 0 || mileage <= 0) return 0;
+      return price / mileage;
+    }
+
+    function setActiveTab(tab) {
+      activeTab = tab;
+      document.getElementById("tabLedger").classList.toggle("active", tab === "ledger");
+      document.getElementById("tabExpenses").classList.toggle("active", tab === "expenses");
+      document.getElementById("sectionLedger").classList.toggle("hidden", tab !== "ledger");
+      document.getElementById("sectionExpenses").classList.toggle("hidden", tab !== "expenses");
+      render();
+    }
+
+    function syncExpenseFormForCategory() {
+      const isAtm = activeCat === "ATM Withdrawal";
+      const isMonthlyPill = MONTHLY_CATS.has(activeCat);
+
+      if (isMonthlyPill) {
+        expFreqSelect.value = "periodic";
+      } else if (!isAtm) {
+        expFreqSelect.value = "daily";
+      }
+
+      document.getElementById("atmHint").classList.toggle("hidden", !isAtm);
+      document.getElementById("periodicHint").classList.toggle("hidden", isAtm || expFreqSelect.value !== "periodic");
+      document.getElementById("customCatBox").classList.toggle("hidden", activeCat !== "+ Custom");
+      document.getElementById("saveExpBtn").textContent = isAtm ? "Save ATM (+Rs. 25 Fee)" : "Save Expense";
+
+      if (isAtm && expAccountSelect.value === "cash") {
+        expAccountSelect.value = "acc1";
+      }
+    }
+
+    expFreqSelect.addEventListener("change", () => {
+      const isAtm = activeCat === "ATM Withdrawal";
+      document.getElementById("periodicHint").classList.toggle("hidden", isAtm || expFreqSelect.value !== "periodic");
+    });
+
+    function renderCatBar() {
+      const bar = document.getElementById("catBar");
+      const pills = [...orderedExpenseCats(), "+ Custom"];
+      bar.innerHTML = "";
+
+      pills.forEach((c) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        const isRedPill = MONTHLY_CATS.has(c);
+        btn.className = `cat-btn ${isRedPill ? "monthly-pill" : ""} ${activeCat === c ? "active" : ""}`;
+        btn.textContent = c;
+        btn.onclick = () => {
+          activeCat = c;
+          syncExpenseFormForCategory();
+          renderCatBar();
+        };
+        bar.appendChild(btn);
+      });
+
+      syncExpenseFormForCategory();
+    }
+
+    function setMode(newMode) {
+      mode = newMode;
+      document.getElementById("btnDaily").classList.toggle("active", mode === "daily");
+      document.getElementById("btnMonthly").classList.toggle("active", mode === "monthly");
+      datePicker.classList.toggle("hidden", mode !== "daily");
+      monthPicker.classList.toggle("hidden", mode !== "monthly");
+      render();
+    }
+
+    function setMonthlyGoals() {
+      const incIn = prompt("Monthly Income Target (Rs.):", data.goals.incomeTarget || 150000);
+      if (incIn === null) return;
+      const expIn = prompt("Monthly Expense Limit (Rs.):", data.goals.expenseLimit || 50000);
+      if (expIn === null) return;
+      const savIn = prompt("Monthly Savings Target (Rs.):", data.goals.savingsTarget || 50000);
+      if (savIn === null) return;
+
+      data.goals.incomeTarget = Math.max(0, parseFloat(incIn) || 0);
+      data.goals.expenseLimit = Math.max(0, parseFloat(expIn) || 0);
+      data.goals.savingsTarget = Math.max(0, parseFloat(savIn) || 0);
+      persist();
+      render();
+    }
+
+    function editBalance(key, title) {
+      const current = data.balances[key] || 0;
+      const ans = prompt(`Set balance for ${title} (Rs.):`, current);
+      if (ans === null) return;
+      const val = parseFloat(ans);
+      if (Number.isNaN(val)) {
+        alert("Please enter a valid number.");
+        return;
+      }
+      data.balances[key] = val;
+      persist();
+      render();
+    }
+
+    function addDeposit(key, title) {
+      const amtInput = prompt(`Enter deposit amount for ${title} (Rs.):`);
+      if (amtInput === null) return;
+      const amount = parseFloat(amtInput);
+      if (Number.isNaN(amount) || amount <= 0) {
+        alert("Please enter a valid deposit amount.");
+        return;
+      }
+      const noteInput = prompt("Note (optional — e.g., Weekly bank deposit):", "Weekly deposit");
+      const note = noteInput === null ? "" : noteInput.trim();
+      const dateVal = mode === "daily" ? (datePicker.value || todayStr()) : todayStr();
+
+      data.balances[key] = (Number(data.balances[key]) || 0) + amount;
+      data.entries.unshift({
+        id: `${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+        type: "deposit",
+        date: dateVal,
+        month: monthFromDate(dateVal),
+        account: key,
+        amount,
+        note,
+      });
+
+      persist();
+      render();
+    }
+
+    function removeEntry(id) {
+      const idx = data.entries.findIndex((x) => x.id === id);
+      if (idx === -1) return;
+      const item = data.entries[idx];
+      const amt = Number(item.amount) || 0;
+      const fee = Number(item.fee) || 0;
+
+      if (item.type === "deposit") {
+        if (item.account && data.balances.hasOwnProperty(item.account)) {
+          data.balances[item.account] -= amt;
+        }
+      } else if (item.type === "atm") {
+        if (item.account && data.balances.hasOwnProperty(item.account)) {
+          data.balances[item.account] += amt + fee;
+        }
+        data.balances.cash = (data.balances.cash || 0) - amt;
+      } else if (item.type === "expense") {
+        if (item.account && data.balances.hasOwnProperty(item.account)) {
+          data.balances[item.account] += amt;
+        }
+      } else if (item.type === "income") {
+        if (item.account && data.balances.hasOwnProperty(item.account)) {
+          data.balances[item.account] -= amt;
+        }
+      }
+
+      data.entries.splice(idx, 1);
+      persist();
+      render();
+    }
+
+    document.getElementById("tabLedger").addEventListener("click", () => setActiveTab("ledger"));
+    document.getElementById("tabExpenses").addEventListener("click", () => setActiveTab("expenses"));
+
+    petrolPriceInput.addEventListener("input", () => {
+      data.fuel.petrolPrice = Math.max(0, parseFloat(petrolPriceInput.value) || 0);
+      persist();
+      render();
+    });
+
+    bikeMileageInput.addEventListener("input", () => {
+      data.fuel.mileageKmPerL = Math.max(0, parseFloat(bikeMileageInput.value) || 0);
+      persist();
+      render();
+    });
+
+    document.getElementById("btnDaily").addEventListener("click", () => setMode("daily"));
+    document.getElementById("btnMonthly").addEventListener("click", () => setMode("monthly"));
+
+    datePicker.addEventListener("change", () => {
+      monthPicker.value = monthFromDate(datePicker.value);
+      expDate.value = datePicker.value;
+      incDate.value = datePicker.value;
+      render();
+    });
+
+    monthPicker.addEventListener("change", render);
+
+    document.getElementById("expenseForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      let category = activeCat;
+      if (category === "+ Custom") {
+        const customName = document.getElementById("customCatInput").value.trim();
+        if (!customName) {
+          alert("Enter a custom category name.");
+          return;
+        }
+        category = customName;
+        if (!BASE_CATS.includes(category) && !data.customCats.includes(category)) {
+          data.customCats.push(category);
+        }
+      }
+
+      const amount = parseFloat(document.getElementById("expAmount").value);
+      const dateVal = expDate.value || todayStr();
+      const account = expAccountSelect.value;
+      const note = document.getElementById("expNote").value.trim();
+      const frequency = expFreqSelect.value || "daily";
+
+      if (Number.isNaN(amount) || amount < 0) {
+        alert("Enter a valid amount.");
+        return;
+      }
+
+      const isAtm = category === "ATM Withdrawal";
+      const fee = isAtm ? ATM_FEE : 0;
+
+      const entry = {
+        id: `${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+        type: isAtm ? "atm" : "expense",
+        frequency: isAtm ? "daily" : frequency,
+        date: dateVal,
+        month: monthFromDate(dateVal),
+        category,
+        amount,
+        fee,
+        account: account || null,
+        note,
+      };
+
+      if (isAtm) {
+        if (account && data.balances.hasOwnProperty(account)) {
+          data.balances[account] -= amount + fee;
+        }
+        data.balances.cash = (data.balances.cash || 0) + amount;
+      } else if (account && data.balances.hasOwnProperty(account)) {
+        data.balances[account] -= amount;
+      }
+
+      data.entries.unshift(entry);
+      persist();
+
+      document.getElementById("expAmount").value = "";
+      document.getElementById("expNote").value = "";
+      document.getElementById("customCatInput").value = "";
+      renderCatBar();
+      render();
+    });
+
+    document.getElementById("incomeForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const uber = Math.max(0, parseFloat(document.getElementById("uberAmount").value) || 0);
+      const pickme = Math.max(0, parseFloat(document.getElementById("pickmeAmount").value) || 0);
+      const other = Math.max(0, parseFloat(document.getElementById("otherAmount").value) || 0);
+      const km = Math.max(0, parseFloat(document.getElementById("incKm").value) || 0);
+      const totalAmount = uber + pickme + other;
+
+      if (totalAmount <= 0 && km <= 0) {
+        alert("Enter Uber, PickMe, Other income or Ride KM.");
+        return;
+      }
+
+      const dateVal = incDate.value || todayStr();
+      const account = document.getElementById("incAccount").value;
+      const note = document.getElementById("incNote").value.trim();
+
+      const entry = {
+        id: `${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+        type: "income",
+        date: dateVal,
+        month: monthFromDate(dateVal),
+        uber,
+        pickme,
+        other,
+        amount: totalAmount,
+        km,
+        account: account || null,
+        note,
+      };
+
+      if (account && data.balances.hasOwnProperty(account)) {
+        data.balances[account] += totalAmount;
+      }
+
+      data.entries.unshift(entry);
+      persist();
+
+      document.getElementById("uberAmount").value = "";
+      document.getElementById("pickmeAmount").value = "";
+      document.getElementById("otherAmount").value = "";
+      document.getElementById("incKm").value = "";
+      document.getElementById("incNote").value = "";
+      render();
+    });
+
+    function render() {
+      const selectedDate = datePicker.value || todayStr();
+      const selectedMonth = monthPicker.value || monthFromDate(selectedDate);
+
+      document.getElementById("expEntryDateLabel").textContent = expDate.value || todayStr();
+
+      const costPerKm = getCostPerKm();
+      document.getElementById("costPerKmDisplay").textContent = `${fmtRs(costPerKm, 2)} / km`;
+
+      const filtered =
+        mode === "daily"
+          ? data.entries.filter((x) => x.date === selectedDate)
+          : data.entries.filter((x) => x.month === selectedMonth);
+
+      const monthEntries = data.entries.filter((x) => x.month === selectedMonth);
+
+      const monthPeriodicExp = monthEntries
+        .filter((x) => x.type === "expense" && x.frequency === "periodic")
+        .reduce((a, b) => a + (Number(b.amount) || 0), 0);
+      const dailyReserveFromPeriodic = monthPeriodicExp / 30;
+
+      const periodTag = mode === "daily" ? `Daily (${selectedDate})` : `Monthly (${selectedMonth})`;
+      const periodWord = mode === "daily" ? "Daily" : "Monthly";
+
+      const incomes = filtered.filter((x) => x.type === "income");
+      const expenses = filtered.filter((x) => x.type === "expense");
+      const atms = filtered.filter((x) => x.type === "atm");
+
+      const uberSum = incomes.reduce((a, b) => a + (Number(b.uber) || 0), 0);
+      const pickmeSum = incomes.reduce((a, b) => a + (Number(b.pickme) || 0), 0);
+      const otherSum = incomes.reduce((a, b) => a + (Number(b.other) || 0), 0);
+      const incSum = incomes.reduce((a, b) => a + (Number(b.amount) || 0), 0);
+
+      const totalKm = incomes.reduce((a, b) => a + (Number(b.km) || 0), 0);
+      const usedPetrolCost = totalKm * costPerKm;
+      const rideGross = uberSum + pickmeSum;
+      const rideNetProfit = rideGross - usedPetrolCost;
+
+      const atmFeesSum = atms.reduce((a, b) => a + (Number(b.fee) || 0), 0);
+      const atmCashSum = atms.reduce((a, b) => a + (Number(b.amount) || 0), 0);
+
+      const displayedExpense =
+        mode === "daily"
+          ? expenses
+              .filter((x) => x.frequency !== "periodic")
+              .reduce((a, b) => a + (Number(b.amount) || 0), 0) + atmFeesSum
+          : expenses.reduce((a, b) => a + (Number(b.amount) || 0), 0) + atmFeesSum;
+
+      document.getElementById("incomeLabel").textContent = `${periodWord} Income`;
+      document.getElementById("incomeVal").textContent = fmtRs(incSum);
+      const incParts = [`Uber: ${fmtRs(uberSum)}`, `PickMe: ${fmtRs(pickmeSum)}`];
+      if (otherSum > 0) incParts.push(`Other: ${fmtRs(otherSum)}`);
+      document.getElementById("incomeSplitSub").textContent = incParts.join(" · ");
+
+      document.getElementById("rideProfitLabel").textContent = `Ride Net Profit (${periodWord})`;
+      const rpEl = document.getElementById("rideProfitVal");
+      rpEl.textContent = fmtRs(rideNetProfit);
+      rpEl.className = `val ${rideNetProfit >= 0 ? "pos" : "neg"}`;
+      document.getElementById("rideProfitSub").textContent =
+        `Rides ${fmtRs(rideGross)} − Fuel (${fmtKm(totalKm)}) ${fmtRs(usedPetrolCost)}`;
+
+      document.getElementById("kmLabel").textContent = `Total Ride KM (${periodWord})`;
+      document.getElementById("kmTotalVal").textContent = fmtKm(totalKm);
+      document.getElementById("usedFuelKmSub").textContent = `Used fuel cost: ${fmtRs(usedPetrolCost)}`;
+
+      document.getElementById("separateExpenseLabel").textContent =
+        mode === "daily" ? "Daily Expense" : "Monthly Expense";
+      document.getElementById("separateExpenseVal").textContent = fmtRs(displayedExpense);
+      document.getElementById("separateExpenseSub").textContent =
+        `Monthly reserve: ~${fmtRs(dailyReserveFromPeriodic)}/day · ATM fees: ${fmtRs(atmFeesSum)}`;
+
+      const mInc = monthEntries.filter((x) => x.type === "income").reduce((a, b) => a + (Number(b.amount) || 0), 0);
+      const mExp =
+        monthEntries.filter((x) => x.type === "expense").reduce((a, b) => a + (Number(b.amount) || 0), 0) +
+        monthEntries.filter((x) => x.type === "atm").reduce((a, b) => a + (Number(b.fee) || 0), 0);
+      const mSaved = mInc - mExp;
+
+      const incTarget = Number(data.goals.incomeTarget) || 0;
+      const expLimit = Number(data.goals.expenseLimit) || 0;
+      const savTarget = Number(data.goals.savingsTarget) || 0;
+
+      const pct = incTarget > 0 ? Math.min(100, Math.round((mInc / incTarget) * 100)) : 0;
+      document.getElementById("targetProgressText").textContent = incTarget > 0 ? `${pct}%` : "No Target";
+      document.getElementById("targetDetailSub").textContent =
+        `${fmtRs(mInc)} / ${fmtRs(incTarget)} (${selectedMonth})`;
+      document.getElementById("targetProgressBar").style.width = `${pct}%`;
+
+      const savedEl = document.getElementById("monthSavedVal");
+      savedEl.textContent = fmtRs(mSaved);
+      savedEl.className = `val ${mSaved >= 0 ? "pos" : "neg"}`;
+      document.getElementById("monthSpendVsLimitSub").textContent =
+        `Monthly Spent: ${fmtRs(mExp)} / Limit: ${fmtRs(expLimit)} · Save Goal: ${fmtRs(savTarget)}`;
+
+      const spendBadge = document.getElementById("spendStatusBadge");
+      if (expLimit > 0 && mExp > expLimit) {
+        spendBadge.textContent = "Spending: High (Over Limit)";
+        spendBadge.className = "status-badge badge-high";
+      } else if (expLimit > 0 && mExp >= expLimit * 0.8) {
+        spendBadge.textContent = "Spending: Near Limit";
+        spendBadge.className = "status-badge badge-warn";
+      } else {
+        spendBadge.textContent = "Spending: Low / Controlled";
+        spendBadge.className = "status-badge badge-good";
+      }
+
+      const saveBadge = document.getElementById("saveStatusBadge");
+      if (mSaved <= 0) {
+        saveBadge.textContent = "Savings: Low / Deficit";
+        saveBadge.className = "status-badge badge-high";
+      } else if (savTarget > 0 && mSaved >= savTarget) {
+        saveBadge.textContent = "Savings: High (On Target)";
+        saveBadge.className = "status-badge badge-good";
+      } else {
+        saveBadge.textContent = "Savings: Below Target";
+        saveBadge.className = "status-badge badge-warn";
+      }
+
+      document.getElementById("acc1Val").textContent = fmtRs(data.balances.acc1);
+      document.getElementById("acc2Val").textContent = fmtRs(data.balances.acc2);
+      document.getElementById("cashVal").textContent = fmtRs(data.balances.cash);
+      document.getElementById("utVal").textContent = fmtRs(data.balances.ut);
+
+      const accMap = {
+        acc1: "Spending / Bank 1",
+        acc2: "Savings / Bank 2",
+        cash: "Cash / Wallet",
+        ut: "Unit Trust",
+      };
+
+      const ledgerItems = filtered.filter((x) => x.type === "income" || x.type === "deposit");
+      document.getElementById("ledgerListTitle").textContent = `Ride & Deposit Entries — ${periodTag}`;
+      document.getElementById("ledgerListCount").textContent = `${ledgerItems.length} items`;
+
+      const ledgerListEl = document.getElementById("ledgerEntriesList");
+      if (ledgerItems.length === 0) {
+        ledgerListEl.innerHTML = `<div class="empty">No ride or deposit entries for ${periodTag}.</div>`;
+      } else {
+        ledgerListEl.innerHTML = "";
+        ledgerItems.forEach((item) => {
+          let title = "";
+          let amtClass = "pos";
+          let prefix = "+";
+
+          if (item.type === "deposit") {
+            title = `Deposit → ${accMap[item.account] || item.account}`;
+            amtClass = "acc-col";
+            prefix = "↓ ";
+          } else {
+            const parts = [];
+            if (item.uber > 0) parts.push(`Uber ${fmtRs(item.uber)}`);
+            if (item.pickme > 0) parts.push(`PickMe ${fmtRs(item.pickme)}`);
+            if (item.other > 0) parts.push(`Other ${fmtRs(item.other)}`);
+            if (item.km > 0) {
+              const estFuel = (Number(item.km) || 0) * costPerKm;
+              parts.push(`${fmtKm(item.km)} (Fuel ~${fmtRs(estFuel)})`);
+            }
+            title = parts.join(" · ") || "Ride Entry";
+          }
+
+          const meta = [item.date];
+          if (item.type !== "deposit" && item.account && accMap[item.account]) {
+            meta.push(accMap[item.account]);
+          }
+          if (item.note) meta.push(item.note);
+
+          const row = document.createElement("div");
+          row.className = "entry";
+          row.innerHTML = `
+            <div>
+              <div class="entry-title">${esc(title)}</div>
+              <div class="entry-meta">${esc(meta.join(" · "))}</div>
+            </div>
+            <div class="entry-right">
+              <strong class="${amtClass}">${prefix}${fmtRs(item.amount)}</strong>
+              <button type="button" class="btn-del" onclick="removeEntry('${item.id}')">Delete</button>
+            </div>
+          `;
+          ledgerListEl.appendChild(row);
+        });
+      }
+
+      document.getElementById("breakdownTitle").textContent = `Expense Breakdown — ${periodTag}`;
+      document.getElementById("totalExpBadge").textContent = `Shown: ${fmtRs(displayedExpense)}`;
+
+      const catTotals = {};
+      orderedExpenseCats().forEach((c) => {
+        catTotals[c] = 0;
+      });
+      expenses.forEach((x) => {
+        catTotals[x.category] = (catTotals[x.category] || 0) + (Number(x.amount) || 0);
+      });
+      catTotals["ATM Withdrawal"] = atmCashSum;
+
+      const breakdownEl = document.getElementById("catBreakdown");
+      breakdownEl.innerHTML = "";
+      Object.entries(catTotals).forEach(([cat, amt]) => {
+        const div = document.createElement("div");
+        div.className = "cat-box";
+        const suffix =
+          cat === "ATM Withdrawal"
+            ? ` <span class='pill'>Fee: ${fmtRs(atmFeesSum, 0)}</span>`
+            : "";
+        div.innerHTML = `<div class="c-name">${esc(cat)}${suffix}</div><div class="c-amt">${fmtRs(amt)}</div>`;
+        breakdownEl.appendChild(div);
+      });
+
+      const expItems = filtered.filter((x) => x.type === "expense" || x.type === "atm");
+      document.getElementById("expListTitle").textContent = `Expense Entries — ${periodTag}`;
+      document.getElementById("expListCount").textContent = `${expItems.length} items`;
+
+      const expListEl = document.getElementById("expenseEntriesList");
+      if (expItems.length === 0) {
+        expListEl.innerHTML = `<div class="empty">No expenses for ${periodTag}.</div>`;
+      } else {
+        expListEl.innerHTML = "";
+        expItems.forEach((item) => {
+          const isAtm = item.type === "atm";
+          const freqBadge =
+            !isAtm && item.frequency === "periodic"
+              ? ` · Monthly (~${fmtRs((Number(item.amount) || 0) / 30)}/day)`
+              : "";
+          const title = isAtm
+            ? `ATM Withdrawal → Cash (Fee Rs. ${item.fee || ATM_FEE})`
+            : `${item.category}${freqBadge}`;
+          const meta = [item.date];
+          if (item.account && accMap[item.account]) meta.push(accMap[item.account]);
+          if (item.note) meta.push(item.note);
+
+          const row = document.createElement("div");
+          row.className = "entry";
+          row.innerHTML = `
+            <div>
+              <div class="entry-title">${esc(title)}</div>
+              <div class="entry-meta">${esc(meta.join(" · "))}</div>
+            </div>
+            <div class="entry-right">
+              <strong class="${isAtm ? "cash-col" : "neg"}">${isAtm ? "⇄ " : "-"}${fmtRs(item.amount)}</strong>
+              <button type="button" class="btn-del" onclick="removeEntry('${item.id}')">Delete</button>
+            </div>
+          `;
+          expListEl.appendChild(row);
+        });
+      }
+    }
+
     document.getElementById("exportBtn").addEventListener("click", () => {
-      const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `kaviwealth-backup-${getCurrentMonthStr()}.json`;
+      a.download = `kaviwealth-backup-${todayStr()}.json`;
       a.click();
       URL.revokeObjectURL(url);
     });
@@ -785,32 +1553,42 @@
       const reader = new FileReader();
       reader.onload = () => {
         try {
-          const imported = JSON.parse(reader.result);
-          if (!imported || typeof imported !== "object") throw new Error("Invalid file");
-          state = {
-            balances: {
-              acc1: Number(imported.balances?.acc1) || 0,
-              acc2: Number(imported.balances?.acc2) || 0,
-              ut: Number(imported.balances?.ut) || 0,
+          const parsed = JSON.parse(reader.result);
+          if (!parsed || typeof parsed !== "object") throw new Error("Bad JSON");
+          data = {
+            fuel: {
+              petrolPrice: Number(parsed.fuel?.petrolPrice) || 0,
+              mileageKmPerL: Number(parsed.fuel?.mileageKmPerL) || 0,
             },
-            customCategories: Array.isArray(imported.customCategories) ? imported.customCategories : [],
-            entries: Array.isArray(imported.entries) ? imported.entries : [],
+            goals: {
+              incomeTarget: Number(parsed.goals?.incomeTarget) || 0,
+              expenseLimit: Number(parsed.goals?.expenseLimit) || 0,
+              savingsTarget: Number(parsed.goals?.savingsTarget) || 0,
+            },
+            balances: {
+              acc1: Number(parsed.balances?.acc1) || 0,
+              acc2: Number(parsed.balances?.acc2) || 0,
+              cash: Number(parsed.balances?.cash) || 0,
+              ut: Number(parsed.balances?.ut) || 0,
+            },
+            customCats: Array.isArray(parsed.customCats) ? parsed.customCats : [],
+            entries: Array.isArray(parsed.entries) ? parsed.entries : [],
           };
-          saveState();
-          renderCategoryPills();
+          petrolPriceInput.value = data.fuel.petrolPrice || "";
+          bikeMileageInput.value = data.fuel.mileageKmPerL || "";
+          persist();
+          renderCatBar();
           render();
-          alert("Backup restored successfully!");
-        } catch (err) {
-          alert("Invalid backup JSON file.");
+          alert("Backup restored!");
+        } catch {
+          alert("Invalid backup file.");
         }
       };
       reader.readAsText(file);
       e.target.value = "";
     });
 
-    monthPicker.addEventListener("change", render);
-
-    renderCategoryPills();
+    renderCatBar();
     render();
   </script>
 </body>
