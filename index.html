@@ -28,14 +28,13 @@
     *, *::before, *::after {
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
-      max-width: 100%;
     }
 
     html, body {
       margin: 0;
       padding: 0;
       width: 100%;
-      max-width: 100vw;
+      max-width: 100%;
       overflow-x: clip;
       background: var(--bg);
       color: var(--text);
@@ -65,6 +64,7 @@
       border-radius: var(--radius);
       padding: 14px;
       margin-bottom: 12px;
+      overflow: hidden;
     }
 
     .brand-row {
@@ -72,6 +72,7 @@
       align-items: center;
       gap: 12px;
       min-width: 0;
+      width: 100%;
     }
 
     .logo-mark {
@@ -112,6 +113,7 @@
       align-items: center;
       gap: 8px;
       width: 100%;
+      min-width: 0;
     }
 
     .seg {
@@ -133,6 +135,7 @@
       font-weight: 700;
       font-size: 0.84rem;
       cursor: pointer;
+      width: auto;
     }
 
     .seg button.active {
@@ -151,12 +154,27 @@
       padding: 10px 12px;
       width: 100%;
       min-width: 0;
+      max-width: 100%;
+      display: block;
+    }
+
+    input[type="date"],
+    input[type="month"] {
+      -webkit-appearance: none;
+      appearance: none;
+      min-width: 0;
+      width: 100%;
+      max-width: 100%;
+      text-align: center;
     }
 
     .toolbar input[type="date"],
     .toolbar input[type="month"],
     .toolbar button,
     .toolbar label {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       width: auto;
       font-size: 0.84rem;
       min-height: 36px;
@@ -166,7 +184,8 @@
 
     .toolbar input[type="date"],
     .toolbar input[type="month"] {
-      max-width: 165px;
+      max-width: 160px;
+      text-align: left;
     }
 
     input:focus, select:focus {
@@ -202,6 +221,9 @@
     }
 
     .btn-edit {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       width: auto;
       background: rgba(56, 189, 248, 0.14);
       color: #7dd3fc;
@@ -213,6 +235,9 @@
     }
 
     .btn-del {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       width: auto;
       background: rgba(239, 68, 68, 0.15);
       color: #fca5a5;
@@ -299,6 +324,7 @@
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 14px;
+      overflow: hidden;
     }
 
     .profit-highlight {
@@ -423,6 +449,9 @@
     }
 
     .acc-actions button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       width: auto;
       min-height: 36px;
       padding: 6px 10px;
@@ -451,6 +480,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      min-width: 0;
     }
 
     .stack {
@@ -458,6 +488,7 @@
       flex-direction: column;
       gap: 10px;
       width: 100%;
+      min-width: 0;
     }
 
     .row {
@@ -465,6 +496,7 @@
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
       width: 100%;
+      min-width: 0;
     }
 
     @media (max-width: 600px) {
@@ -476,6 +508,7 @@
       flex-direction: column;
       gap: 4px;
       min-width: 0;
+      width: 100%;
     }
 
     .field-group label {
@@ -491,6 +524,9 @@
     }
 
     .cat-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       width: auto;
       border-radius: 999px;
       min-height: 38px;
@@ -601,6 +637,7 @@
     }
 
     .pill {
+      display: inline-block;
       font-size: 0.74rem;
       padding: 4px 9px;
       border-radius: 999px;
@@ -821,14 +858,20 @@
           </div>
 
           <div class="row">
-            <input type="date" id="incDate" aria-label="Income Date" required />
-            <select id="incAccount" aria-label="Deposit To">
-              <option value="">No Balance Change</option>
-              <option value="acc1">Spending / Bank 1</option>
-              <option value="acc2">Savings / Bank 2</option>
-              <option value="cash">Cash / Wallet</option>
-              <option value="ut">Unit Trust</option>
-            </select>
+            <div class="field-group">
+              <label for="incDate">Date</label>
+              <input type="date" id="incDate" aria-label="Income Date" required />
+            </div>
+            <div class="field-group">
+              <label for="incAccount">Deposit To</label>
+              <select id="incAccount" aria-label="Deposit To">
+                <option value="">No Balance Change</option>
+                <option value="acc1">Spending / Bank 1</option>
+                <option value="acc2">Savings / Bank 2</option>
+                <option value="cash">Cash / Wallet</option>
+                <option value="ut">Unit Trust</option>
+              </select>
+            </div>
           </div>
 
           <input type="text" id="incNote" placeholder="Note (optional)" />
@@ -878,14 +921,20 @@
           </div>
 
           <div class="row">
-            <input type="date" id="expDate" aria-label="Expense Date" required />
-            <select id="expAccount" aria-label="Account">
-              <option value="cash">Cash / Wallet</option>
-              <option value="acc1">Spending / Bank 1</option>
-              <option value="acc2">Savings / Bank 2</option>
-              <option value="ut">Unit Trust</option>
-              <option value="">No Balance Change</option>
-            </select>
+            <div class="field-group">
+              <label for="expDate">Date</label>
+              <input type="date" id="expDate" aria-label="Expense Date" required />
+            </div>
+            <div class="field-group">
+              <label for="expAccount">Account</label>
+              <select id="expAccount" aria-label="Account">
+                <option value="cash">Cash / Wallet</option>
+                <option value="acc1">Spending / Bank 1</option>
+                <option value="acc2">Savings / Bank 2</option>
+                <option value="ut">Unit Trust</option>
+                <option value="">No Balance Change</option>
+              </select>
+            </div>
           </div>
 
           <input type="text" id="expNote" placeholder="Note (e.g., Lunch, Boarding fee, Service)" />
@@ -913,7 +962,7 @@
   </div>
 
   <script>
-    const STORAGE_KEY = "kaviwealth_pro_v13";
+    const STORAGE_KEY = "kaviwealth_pro_v14";
     const ATM_FEE = 25;
     const BASE_CATS = [
       "Food",
@@ -1493,7 +1542,6 @@
         saveBadge.className = "status-badge badge-warn";
       }
 
-      // Total Net Worth & Accounts
       const b1 = Number(data.balances.acc1) || 0;
       const b2 = Number(data.balances.acc2) || 0;
       const cashB = Number(data.balances.cash) || 0;
